@@ -9,8 +9,11 @@ namespace ClassSurvey1.Modules
     public class UserEntity : BaseEntity
     {
         public Guid Id { get; set; }
+        [Column(1)]
         public string Username { get; set; }
+        [Column(2)]
         public string Password { get; set; }
+        [Column(3)]
         public List<string> Roles { get; set; }
         public UserEntity() { }
 

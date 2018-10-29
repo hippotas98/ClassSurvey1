@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -11,9 +12,11 @@ namespace ClassSurvey1.Modules
     public class UserController : Controller
     {
         public IUserService UserService;
+        
         public UserController(IUserService UserService)
         {
             this.UserService = UserService;
+           
         }
 
         //[Route("Count"), HttpGet]
@@ -59,6 +62,21 @@ namespace ClassSurvey1.Modules
             var CookieOptions = new CookieOptions { Expires = DateTime.Now.AddDays(30), Path = "/" };
             Response.Cookies.Append("JWT", token, CookieOptions);
             return token;
+        }
+        [HttpPost("Upload")]
+        public async Task<IActionResult> InsertUsers([FromForm]UploadClass data)
+        {
+            IEnumerable<IFormFile> files = data.myFile;
+            foreach (var file in files)
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    await file.CopyToAsync(ms);
+                    byte[] bytes = ms.ToArray();
+                    UserService.ConvertToIEnumrable<UserEntity>(bytes);
+                }
+            }
+            return Ok();
         }
     }
 }

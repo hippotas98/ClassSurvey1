@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ClassSurvey1.Modules
 {
-    public interface IUserService : ITransientService
+    public interface IUserService : ITransientService, ICommonService
     {
         //long Count(SearchUserEntity SearchUserEntity);
         //List<UserEntity> Get(SearchUserEntity SearchUserEntity);

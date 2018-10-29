@@ -27,6 +27,7 @@ namespace ClassSurvey1
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IJWTHandler, JWTHandler>();
+
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -40,6 +41,10 @@ namespace ClassSurvey1
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             var sp = services.BuildServiceProvider();
             var JWTHandler = sp.GetRequiredService<IJWTHandler>();
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/build";
+            });
             services.AddMvc(options =>
             {
                 options.Filters.Add(new ExceptionResponseAttribute()); // an instance
@@ -64,10 +69,7 @@ namespace ClassSurvey1
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/build";
-            });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
