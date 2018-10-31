@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClassSurvey1.Modules
 {
     [Route("api/Users")]
-    public class UserController : Controller
+    public class UserController : CommonController
     {
         public IUserService UserService;
         

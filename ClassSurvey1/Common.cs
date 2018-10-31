@@ -18,7 +18,7 @@ namespace ClassSurvey1
                 else
                 if (source.PropertyType == typeof(Guid) ||
                     source.PropertyType == typeof(Guid?) ||
-                    source.PropertyType == typeof(string) ||
+                    source.PropertyType == typeof(string) ||      
                     source.PropertyType == typeof(int) ||
                     source.PropertyType == typeof(int?) ||
                     source.PropertyType == typeof(long) ||

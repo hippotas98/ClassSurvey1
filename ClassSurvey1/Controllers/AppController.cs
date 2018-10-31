@@ -10,7 +10,7 @@ namespace ClassSurvey1.Modules
 {
     [Authorize]
     [Route("App")]
-    public class AppController : Controller
+    public class AppController : CommonController
     {
         private IUserService UserService;
         public AppController(IUserService UserService)

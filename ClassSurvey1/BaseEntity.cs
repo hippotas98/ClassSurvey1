@@ -13,7 +13,6 @@ namespace ClassSurvey1
     public interface ICommand { }
     public class BaseEntity
     {
-
         public Dictionary<string, string> Errors = new Dictionary<string, string>();
 
         public void AddError(string Key, string Value)
@@ -72,8 +71,9 @@ namespace ClassSurvey1
         public BaseEntity() { }
         public BaseEntity(object obj)
         {
-            Common<object>.Copy(obj, this);
+            Common<object>.Copy(obj,this);
         }
+        
     }
 
 

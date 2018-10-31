@@ -9,6 +9,6 @@ namespace ClassSurvey1.Modules
 {
     public class CommonController : Controller
     {
-        public UserEntity EmployeeEntity => (User as MyPrincipal)?.UserEntity;
+        public UserEntity UserEntity => (User as MyPrincipal)?.UserEntity;
     }
 }
