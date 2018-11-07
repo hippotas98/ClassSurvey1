@@ -10,7 +10,7 @@ namespace ClassSurvey1.Models
         public string Content { get; set; }
         public Guid VersionSurveyId { get; set; }
 
-        public StudentClas StudentClass { get; set; }
+        public StudentClass StudentClass { get; set; }
         public VersionSurvey VersionSurvey { get; set; }
     }
 }

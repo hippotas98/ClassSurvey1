@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace ClassSurvey1.Models
 {
-    public partial class Clas
+    public partial class Class
     {
-        public Clas()
+        public Class()
         {
-            StudentClas = new HashSet<StudentClas>();
+            StudentClasses = new HashSet<StudentClass>();
         }
 
         public Guid Id { get; set; }
@@ -23,6 +23,6 @@ namespace ClassSurvey1.Models
         public decimal? Std2 { get; set; }
 
         public Lecturer Lecture { get; set; }
-        public ICollection<StudentClas> StudentClas { get; set; }
+        public ICollection<StudentClass> StudentClasses { get; set; }
     }
 }

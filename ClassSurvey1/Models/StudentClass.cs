@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace ClassSurvey1.Models
 {
-    public partial class StudentClas
+    public partial class StudentClass
     {
-        public StudentClas()
+        public StudentClass()
         {
             Surveys = new HashSet<Survey>();
         }
@@ -14,7 +14,7 @@ namespace ClassSurvey1.Models
         public Guid StudentId { get; set; }
         public Guid ClassId { get; set; }
 
-        public Clas Class { get; set; }
+        public Class Class { get; set; }
         public Student Student { get; set; }
         public ICollection<Survey> Surveys { get; set; }
     }

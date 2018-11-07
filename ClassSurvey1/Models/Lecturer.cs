@@ -7,7 +7,7 @@ namespace ClassSurvey1.Models
     {
         public Lecturer()
         {
-            Clas = new HashSet<Clas>();
+            Classes = new HashSet<Class>();
         }
 
         public Guid Id { get; set; }
@@ -18,6 +18,6 @@ namespace ClassSurvey1.Models
         public string LectureCode { get; set; }
 
         public User User { get; set; }
-        public ICollection<Clas> Clas { get; set; }
+        public ICollection<Class> Classes { get; set; }
     }
 }

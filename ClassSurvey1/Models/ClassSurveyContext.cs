@@ -16,11 +16,11 @@ namespace ClassSurvey1.Models
         }
 
         public virtual DbSet<Admin> Admins { get; set; }
-        public virtual DbSet<Clas> Classes { get; set; }
+        public virtual DbSet<Class> Classes { get; set; }
         public virtual DbSet<Lecturer> Lecturers { get; set; }
         public virtual DbSet<Operation> Operations { get; set; }
         public virtual DbSet<Student> Students { get; set; }
-        public virtual DbSet<StudentClas> StudentClasses { get; set; }
+        public virtual DbSet<StudentClass> StudentClasses { get; set; }
         public virtual DbSet<Survey> Surveys { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<VersionSurvey> VersionSurveys { get; set; }
@@ -55,10 +55,8 @@ namespace ClassSurvey1.Models
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<Clas>(entity =>
+            modelBuilder.Entity<Class>(entity =>
             {
-                entity.ToTable("Class");
-
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.ClassCode)
@@ -88,7 +86,7 @@ namespace ClassSurvey1.Models
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.Lecture)
-                    .WithMany(p => p.Clas)
+                    .WithMany(p => p.Classes)
                     .HasForeignKey(d => d.LectureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Class_Lecture");
@@ -96,8 +94,6 @@ namespace ClassSurvey1.Models
 
             modelBuilder.Entity<Lecturer>(entity =>
             {
-                entity.ToTable("Lecturer");
-
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.LectureCode)
@@ -119,8 +115,6 @@ namespace ClassSurvey1.Models
 
             modelBuilder.Entity<Operation>(entity =>
             {
-                entity.ToTable("Operation");
-
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Link)
@@ -134,8 +128,6 @@ namespace ClassSurvey1.Models
 
             modelBuilder.Entity<Student>(entity =>
             {
-                entity.ToTable("Student");
-
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Name)
@@ -147,20 +139,18 @@ namespace ClassSurvey1.Models
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<StudentClas>(entity =>
+            modelBuilder.Entity<StudentClass>(entity =>
             {
-                entity.ToTable("StudentClass");
-
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.HasOne(d => d.Class)
-                    .WithMany(p => p.StudentClas)
+                    .WithMany(p => p.StudentClasses)
                     .HasForeignKey(d => d.ClassId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StudentClass_Class");
 
                 entity.HasOne(d => d.Student)
-                    .WithMany(p => p.StudentClas)
+                    .WithMany(p => p.StudentClasses)
                     .HasForeignKey(d => d.StudentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StudentClass_Student");
@@ -189,8 +179,6 @@ namespace ClassSurvey1.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("User");
-
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Name)

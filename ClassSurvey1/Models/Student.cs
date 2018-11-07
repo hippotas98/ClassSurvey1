@@ -7,7 +7,7 @@ namespace ClassSurvey1.Models
     {
         public Student()
         {
-            StudentClas = new HashSet<StudentClas>();
+            StudentClasses = new HashSet<StudentClass>();
         }
 
         public Guid Id { get; set; }
@@ -18,6 +18,6 @@ namespace ClassSurvey1.Models
         public string Vnumail { get; set; }
 
         public User User { get; set; }
-        public ICollection<StudentClas> StudentClas { get; set; }
+        public ICollection<StudentClass> StudentClasses { get; set; }
     }
 }

@@ -1,0 +1,35 @@
+﻿using ClassSurvey1.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ClassSurvey1.Models
+{
+    public partial class Student : Base
+    {
+
+        public Student(StudentEntity studentEntity) : base(studentEntity)
+        {
+            if (studentEntity.StudentClasses != null)
+            {
+                this.StudentClasses = new HashSet<StudentClass>();
+                foreach(var studentClassEntity in studentEntity.StudentClasses)
+                {
+                    studentClassEntity.StudentId = this.Id;
+                    this.StudentClasses.Add(new StudentClass(studentClassEntity));
+                }
+            }
+        }
+        public override bool Equals(Base other)
+        {
+            if (other == null) return false;
+            if (other is Student Student)
+            {
+                return Id.Equals(Student.Id) && Code.Equals(Student.Code);
+            }
+
+            return false;
+        }
+    }
+}
