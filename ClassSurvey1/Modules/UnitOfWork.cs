@@ -1,4 +1,5 @@
 ﻿
+using ClassSurvey1.Models;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace ClassSurvey1.Modules
 {
     public interface IUnitOfWork : ITransientService/*, IDisposable*/
     {
-        //void Complete();
+        void Complete();
         //    ICarrierRepository CarrierRepository { get; }
         //    ICategoryRepository CategoryRepository { get; }
         //    ICountryRepository CountryRepository { get; }
@@ -40,8 +41,8 @@ namespace ClassSurvey1.Modules
         }
         public class UnitOfWork : IUnitOfWork
         {
-    //    private EShopContext context;
-    //    private IDbContextTransaction _transaction;
+        public ClassSurveyContext context { get; set; }
+        private IDbContextTransaction _transaction;
 
         //    private ICarrierRepository _carrierRepository;
         //    private ICategoryRepository _categoryRepository;
@@ -82,37 +83,37 @@ namespace ClassSurvey1.Modules
             //this.context = new EShopContext();
         }
 
-        //public UnitOfWork(EShopContext context)
-        //{
-        //    this.context = context;
-        //}
+        public UnitOfWork(ClassSurveyContext context)
+        {
+            this.context = context;
+        }
 
-        //~UnitOfWork()
-        //{
-        //    context.Dispose();
-        //}
-        //public void Dispose()
-        //{
-        //    context.Dispose();
-        //}
-        //public void Complete()
-        //{
-        //    try
-        //    {
-        //        context.SaveChanges();
-        //        _transaction.Commit();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _transaction.Rollback();
-        //        throw new InternalServerErrorException(ex.Message);
-        //    }
-        //    finally
-        //    {
-        //        _transaction.Dispose();
-        //        _transaction = null;
-        //    }
-        //}
+        ~UnitOfWork()
+        {
+            context.Dispose();
+        }
+        public void Dispose()
+        {
+            context.Dispose();
+        }
+        public void Complete()
+        {
+            try
+            {
+                context.SaveChanges();
+                _transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _transaction.Rollback();
+                throw new BadRequestException(ex.Message);
+            }
+            finally
+            {
+                _transaction.Dispose();
+                _transaction = null;
+            }
+        }
 
         //public ICarrierRepository CarrierRepository
         //{

@@ -66,7 +66,7 @@ namespace ClassSurvey1.Modules
         [HttpPost("Upload")]
         public async Task<IActionResult> InsertUsers([FromForm]UploadClass data)
         {
-            IEnumerable<IFormFile> files = data.myFile;
+            IEnumerable<IFormFile> files = data.myFiles;
             foreach (var file in files)
             {
                 using (MemoryStream ms = new MemoryStream())

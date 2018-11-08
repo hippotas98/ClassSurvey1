@@ -42,5 +42,7 @@ namespace ClassSurvey1.Entities
     {
         public Guid Id { get; set; }
         public string ClassCode { get; set; }
+        public Guid LectureId { get; set; }
+        public string Subject { get; set; }
     }
 }

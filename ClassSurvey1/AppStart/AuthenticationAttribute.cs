@@ -30,7 +30,7 @@ namespace ClassSurvey1
         //uy quyen
         public void OnActionExecuting(ActionExecutingContext FilterContext)
         {
-           
+            return;
             if (FilterContext.HttpContext.Request.Path.Value.StartsWith("/App/Login"))
                 return;
             var Token = FilterContext.HttpContext.Request.Cookies["JWT"];

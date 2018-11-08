@@ -48,7 +48,7 @@ namespace ClassSurvey1
             services.AddMvc(options =>
             {
                 options.Filters.Add(new ExceptionResponseAttribute()); // an instance
-                options.Filters.Add(new AuthenticationFilter(Configuration, JWTHandler));
+                //options.Filters.Add(new AuthenticationFilter(Configuration, JWTHandler));
             });
 
             services.AddMvc().AddJsonOptions(options =>

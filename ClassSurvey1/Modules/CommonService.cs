@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ClassSurvey1.Models;
+using Microsoft.AspNetCore.Http;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -24,23 +26,37 @@ namespace ClassSurvey1.Modules
     }
     public interface ICommonService
     {
-        IEnumerable<T> ConvertToIEnumrable<T>(byte[] data) where T : BaseEntity, new();
+        IEnumerable<T> ConvertToIEnumrable<T>(byte[] data) where T : new();
         string GetPropValueFromExcel(byte[] data, string prop);
     }
     public class CommonService : ICommonService
     {
-        protected IUnitOfWork UnitOfWork;
-
+        //protected IUnitOfWork UnitOfWork;
+        protected ClassSurveyContext context;
         public CommonService()
         {
+            context = new ClassSurveyContext();
         }
 
-        public CommonService(IUnitOfWork UnitOfWork)
+        //public CommonService(IUnitOfWork UnitOfWork)
+        //{
+        //    this.UnitOfWork = UnitOfWork;
+        //}
+        protected IQueryable<T> SkipAndTake<T>(IQueryable<T> source, FilterEntity FilterEntity)
         {
-            this.UnitOfWork = UnitOfWork;
+            string command = FilterEntity.SortType == SortType.ASC ? "OrderBy" : "OrderByDescending";
+            var type = typeof(T);
+            var property = type.GetProperty(FilterEntity.SortBy);
+            var parameter = Expression.Parameter(type, "p");
+            var propertyAccess = Expression.MakeMemberAccess(parameter, property);
+            var orderByExpression = Expression.Lambda(propertyAccess, parameter);
+            var resultExpression = Expression.Call(typeof(Queryable), command, new Type[] { type, property.PropertyType },
+                                          source.Expression, Expression.Quote(orderByExpression));
+            source = source.Provider.CreateQuery<T>(resultExpression);
+            source = source.Skip(FilterEntity.Skip).Take(FilterEntity.Take);
+            return source;
         }
-
-        public IEnumerable<T> ConvertToIEnumrable<T>(byte[] data) where T : BaseEntity, new()
+        public IEnumerable<T> ConvertToIEnumrable<T>(byte[] data) where T : new()
         {
             using (MemoryStream ms = new MemoryStream(data))
             {
@@ -110,7 +126,17 @@ namespace ClassSurvey1.Modules
                         if (value != null)
                             if (value.ToString().Contains(prop))
                             {
-                                result = worksheet.Cells[row, column + 1].Value.ToString();
+                                for(int i = 1; i < 10; ++i)
+                                {
+                                    if(worksheet.Cells[row, column, row, column+i].Merge == false )
+                                    {
+                                        if(worksheet.Cells[row, column + i].Value != null)
+                                            result = worksheet.Cells[row, column + i].Value.ToString();
+                                        Console.WriteLine(worksheet.Cells[row, column + i].Value);
+                                    }
+                                        
+                                    
+                                }
                                 return result;
                             }
                     }
@@ -120,7 +146,7 @@ namespace ClassSurvey1.Modules
             }
         }
 
-        static IEnumerable<T> ConvertSheetToObjects<T>(ExcelWorksheet worksheet) where T : BaseEntity, new()
+        static IEnumerable<T> ConvertSheetToObjects<T>(ExcelWorksheet worksheet) where T : new()
         {
             Func<CustomAttributeData, bool> columnOnly = y => y.AttributeType == typeof(Column);
 
@@ -207,15 +233,15 @@ namespace ClassSurvey1.Modules
     }
     public class UploadClass
     {
-        public IEnumerable<IFormFile> myFile { get; set; }
+        public IEnumerable<IFormFile> myFiles { get; set; }
 
         public UploadClass()
         {
         }
 
-        public UploadClass(List<IFormFile> myFile)
+        public UploadClass(List<IFormFile> myFiles)
         {
-            this.myFile = myFile;
+            this.myFiles = myFiles;
         }
     }
 }
