@@ -28,6 +28,7 @@ namespace ClassSurvey1.Modules
     {
         IEnumerable<T> ConvertToIEnumrable<T>(byte[] data) where T : new();
         string GetPropValueFromExcel(byte[] data, string prop);
+        //IQueryable<T> SkipAndTake<T>(IQueryable<T> source, FilterEntity FilterEntity);
     }
     public class CommonService : ICommonService
     {
@@ -42,20 +43,6 @@ namespace ClassSurvey1.Modules
         //{
         //    this.UnitOfWork = UnitOfWork;
         //}
-        protected IQueryable<T> SkipAndTake<T>(IQueryable<T> source, FilterEntity FilterEntity)
-        {
-            string command = FilterEntity.SortType == SortType.ASC ? "OrderBy" : "OrderByDescending";
-            var type = typeof(T);
-            var property = type.GetProperty(FilterEntity.SortBy);
-            var parameter = Expression.Parameter(type, "p");
-            var propertyAccess = Expression.MakeMemberAccess(parameter, property);
-            var orderByExpression = Expression.Lambda(propertyAccess, parameter);
-            var resultExpression = Expression.Call(typeof(Queryable), command, new Type[] { type, property.PropertyType },
-                                          source.Expression, Expression.Quote(orderByExpression));
-            source = source.Provider.CreateQuery<T>(resultExpression);
-            source = source.Skip(FilterEntity.Skip).Take(FilterEntity.Take);
-            return source;
-        }
         public IEnumerable<T> ConvertToIEnumrable<T>(byte[] data) where T : new()
         {
             using (MemoryStream ms = new MemoryStream(data))

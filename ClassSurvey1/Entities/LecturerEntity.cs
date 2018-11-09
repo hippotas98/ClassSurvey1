@@ -13,7 +13,7 @@ namespace ClassSurvey1.Entities
         public string Vnumail { get; set; }
         public int Role { get; set; }
         public string Phone { get; set; }
-        public string LectureCode { get; set; }
+        public string LecturerCode { get; set; }
 
         public User User { get; set; }
         public ICollection<ClassEntity> Classes { get; set; }
@@ -36,6 +36,6 @@ namespace ClassSurvey1.Entities
         public string Name { get; set; }
         public string Vnumail { get; set; }
         public string Phone { get; set; }
-        public string LectureCode { get; set; }
+        public string LecturerCode { get; set; }
     }
 }

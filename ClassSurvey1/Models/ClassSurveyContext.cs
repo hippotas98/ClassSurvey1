@@ -46,13 +46,17 @@ namespace ClassSurvey1.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Phone)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.Phone).HasMaxLength(50);
 
                 entity.Property(e => e.Vnumail)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.HasOne(d => d.IdNavigation)
+                    .WithOne(p => p.Admin)
+                    .HasForeignKey<Admin>(d => d.Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Admin_User");
             });
 
             modelBuilder.Entity<Class>(entity =>
@@ -85,9 +89,9 @@ namespace ClassSurvey1.Models
                     .HasMaxLength(255)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.Lecture)
+                entity.HasOne(d => d.Lecturer)
                     .WithMany(p => p.Classes)
-                    .HasForeignKey(d => d.LectureId)
+                    .HasForeignKey(d => d.LecturerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Class_Lecture");
             });
@@ -96,7 +100,7 @@ namespace ClassSurvey1.Models
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.LectureCode)
+                entity.Property(e => e.LecturerCode)
                     .IsRequired()
                     .HasMaxLength(10);
 
@@ -104,13 +108,17 @@ namespace ClassSurvey1.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Phone)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.Phone).HasMaxLength(50);
 
                 entity.Property(e => e.Vnumail)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.HasOne(d => d.IdNavigation)
+                    .WithOne(p => p.Lecturer)
+                    .HasForeignKey<Lecturer>(d => d.Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Lecturer_User");
             });
 
             modelBuilder.Entity<Operation>(entity =>
@@ -130,13 +138,25 @@ namespace ClassSurvey1.Models
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Vnumail)
+                    .IsRequired()
                     .HasMaxLength(255)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.IdNavigation)
+                    .WithOne(p => p.Student)
+                    .HasForeignKey<Student>(d => d.Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Student_User");
             });
 
             modelBuilder.Entity<StudentClass>(entity =>
@@ -189,24 +209,6 @@ namespace ClassSurvey1.Models
                     .IsRequired()
                     .HasMaxLength(255)
                     .IsUnicode(false);
-
-                entity.HasOne(d => d.IdNavigation)
-                    .WithOne(p => p.User)
-                    .HasForeignKey<User>(d => d.Id)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_User_Admin");
-
-                entity.HasOne(d => d.Id1)
-                    .WithOne(p => p.User)
-                    .HasForeignKey<User>(d => d.Id)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_User_Lecture");
-
-                entity.HasOne(d => d.Id2)
-                    .WithOne(p => p.User)
-                    .HasForeignKey<User>(d => d.Id)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_User_Student");
             });
 
             modelBuilder.Entity<VersionSurvey>(entity =>

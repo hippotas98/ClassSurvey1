@@ -13,7 +13,7 @@ namespace ClassSurvey1.Models
         public Guid Id { get; set; }
         public string ClassCode { get; set; }
         public int StudentNumber { get; set; }
-        public Guid LectureId { get; set; }
+        public Guid LecturerId { get; set; }
         public string Subject { get; set; }
         public decimal? M { get; set; }
         public decimal? M1 { get; set; }
@@ -22,7 +22,7 @@ namespace ClassSurvey1.Models
         public decimal? Std1 { get; set; }
         public decimal? Std2 { get; set; }
 
-        public Lecturer Lecture { get; set; }
+        public Lecturer Lecturer { get; set; }
         public ICollection<StudentClass> StudentClasses { get; set; }
     }
 }

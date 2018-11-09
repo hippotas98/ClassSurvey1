@@ -11,7 +11,7 @@ namespace ClassSurvey1.Entities
         public Guid Id { get; set; }
         public string ClassCode { get; set; }
         public int StudentNumber { get; set; }
-        public Guid LectureId { get; set; }
+        public Guid LecturerId { get; set; }
         public string Subject { get; set; }
         public decimal? M { get; set; }
         public decimal? M1 { get; set; }
@@ -20,7 +20,7 @@ namespace ClassSurvey1.Entities
         public decimal? Std1 { get; set; }
         public decimal? Std2 { get; set; }
 
-        public LecturerEntity Lecture { get; set; }
+        public LecturerEntity Lecturer { get; set; }
         public ICollection<StudentClassEntity> StudentClasses { get; set; }
         public ClassEntity() : base() { }
         public ClassEntity(Class Class, params object[] args) : base(Class)
@@ -29,7 +29,7 @@ namespace ClassSurvey1.Entities
             {
                 if (arg is Lecturer lecturer)
                 {
-                    this.Lecture = new LecturerEntity(lecturer);
+                    this.Lecturer = new LecturerEntity(lecturer);
                 }
                 else if (arg is ICollection<StudentClass> students)
                 {
@@ -42,7 +42,7 @@ namespace ClassSurvey1.Entities
     {
         public Guid Id { get; set; }
         public string ClassCode { get; set; }
-        public Guid LectureId { get; set; }
+        public Guid LecturerId { get; set; }
         public string Subject { get; set; }
     }
 }

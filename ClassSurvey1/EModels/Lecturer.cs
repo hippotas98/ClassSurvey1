@@ -16,7 +16,7 @@ namespace ClassSurvey1.Models
                 this.Classes = new HashSet<Class>();
                 foreach(var classEntity in lecturerEntity.Classes)
                 {
-                    classEntity.LectureId = this.Id;
+                    classEntity.LecturerId = this.Id;
                     this.Classes.Add(new Class(classEntity));
                 }
                 
@@ -28,7 +28,7 @@ namespace ClassSurvey1.Models
             if (other == null) return false;
             if (other is Lecturer lecturer)
             {
-                return Id.Equals(lecturer.Id) && LectureCode.Equals(lecturer.LectureCode);
+                return Id.Equals(lecturer.Id) && LecturerCode.Equals(lecturer.LecturerCode);
             }
 
             return false;

@@ -81,26 +81,48 @@ namespace ClassSurvey1
     {
         int Take { get; set; }
         int Skip { get; set; }
-        string SortBy { get; set; }
-        SortType? SortType { get; set; }
+        string OrderBy { get; set; }
+        OrderType? OrderType { get; set; }
     }
 
     public class FilterEntity : IFilterEntity
     {
-        public Guid? CurrentUserId;
         public int Take { get; set; }
         public int Skip { get; set; }
-        public string SortBy { get; set; }
-        public SortType? SortType { get; set; }
-        public FilterEntity()
+        public string OrderBy { get; set; }
+        public OrderType? OrderType { get; set; }
+
+        public IQueryable<T> Order<T>(IQueryable<T> source)
         {
-            if (Take == 0) Take = 10;
-            if (Skip == 0) Skip = 0;
-            if (string.IsNullOrEmpty(SortBy)) SortBy = "Cx";
-            if (!SortType.HasValue) SortType = ClassSurvey1.SortType.ASC;
+            if (!string.IsNullOrEmpty(OrderBy))
+            {
+                OrderType = OrderType == null ? ClassSurvey1.OrderType.ASC : OrderType;
+
+                string command = this.OrderType == ClassSurvey1.OrderType.ASC ? "OrderBy" : "OrderByDescending";
+                var type = typeof(T);
+                var property = type.GetProperty(OrderBy);
+                var parameter = Expression.Parameter(type, "p");
+                var propertyAccess = Expression.MakeMemberAccess(parameter, property);
+                var orderByExpression = Expression.Lambda(propertyAccess, parameter);
+                var resultExpression = Expression.Call(typeof(Queryable), command, new Type[] { type, property.PropertyType },
+                    source.Expression, Expression.Quote(orderByExpression));
+                return source.Provider.CreateQuery<T>(resultExpression);
+            }
+            else
+                return source;
+        }
+
+        public IQueryable<T> SkipAndTake<T>(IQueryable<T> source)
+        {
+            if (Skip == 0 && Take == 0)
+            {
+                Skip = 0; Take = 10;
+            }
+            return source.Skip(Skip).Take(Take);
         }
     }
-    public enum SortType
+
+    public enum OrderType
     {
         NONE = 0,
         DESC = 1,

@@ -11,9 +11,9 @@ namespace ClassSurvey1.Models
        
         public Class(ClassEntity classEntity) : base(classEntity)
         {
-            if(classEntity.Lecture != null)
+            if(classEntity.Lecturer != null)
             {
-                this.Lecture = new Lecturer(classEntity.Lecture);
+                this.Lecturer = new Lecturer(classEntity.Lecturer);
             }
             if(classEntity.StudentClasses != null)
             {

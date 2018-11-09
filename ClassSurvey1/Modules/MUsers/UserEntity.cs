@@ -21,9 +21,9 @@ namespace ClassSurvey1.Modules
         public UserEntity(User User) : base(User)
         {
             ROLES Roles = ROLES.USER;
-            if (User.IdNavigation!= null) Roles = Roles | ROLES.ADMIN;
-            if (User.Id2 != null) Roles |= ROLES.STUDENT;
-            if (User.Id1 != null) Roles |= ROLES.LECTURER;
+            if (User.Admin!= null) Roles = Roles | ROLES.ADMIN;
+            if (User.Student != null) Roles |= ROLES.STUDENT;
+            if (User.Lecturer != null) Roles |= ROLES.LECTURER;
             
             this.Roles = Roles.ToString().Replace(" ", "").Split(",").ToList();
         }
@@ -44,12 +44,13 @@ namespace ClassSurvey1.Modules
         //    this.Organization = Admin.Organization;
         //}
     }
-
+    [Flags]
     public enum ROLES
     {
-        USER = 0,
-        ADMIN = 1,
-        LECTURER = 2,
-        STUDENT = 4,
+        NONE = 0,
+        USER = 1,
+        ADMIN = 2,
+        LECTURER = 4,
+        STUDENT = 8,
     }
 }

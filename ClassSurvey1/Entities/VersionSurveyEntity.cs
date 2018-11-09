@@ -20,7 +20,8 @@ namespace ClassSurvey1.Entities
         }
         public VersionSurveyEntity(VersionSurvey versionSurvey, params object[] args) : base(versionSurvey)
         {
-            this.ContentCategory = JsonConvert.DeserializeObject<VersionSurveyContent>(this.Content).Values;
+            if(this.Content != null || this.Content != "")
+                this.ContentCategory = JsonConvert.DeserializeObject<VersionSurveyContent>(this.Content).Values;
             foreach (var arg in args)
             {
                 if(arg is ICollection<Survey> surveys)

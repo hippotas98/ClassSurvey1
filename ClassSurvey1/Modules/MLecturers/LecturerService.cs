@@ -14,7 +14,8 @@ namespace ClassSurvey1.Modules.MLecturers
         LecturerEntity Get(UserEntity userEntity, Guid LecturerId);
         LecturerEntity Update(UserEntity userEntity, Guid LecturerId, LecturerEntity lecturerEntity);
         bool Delete(UserEntity userEntity, Guid LecturerId);
-        List<LecturerEntity> Create(byte[] data, LecturerEntity lecturerEntity = null);
+        List<LecturerEntity> CreateFromExcel(byte[] data);
+        LecturerEntity Create(LecturerExcelModel LecturerExcelModel);
     }
     public class LecturerService : CommonService, ILecturerService
     {
@@ -37,8 +38,8 @@ namespace ClassSurvey1.Modules.MLecturers
             if (LecturerSearchEntity == null) LecturerSearchEntity = new LecturerSearchEntity();
             IQueryable<Lecturer> lecturers = context.Lecturers;
             Apply(lecturers, LecturerSearchEntity);
-            SkipAndTake(lecturers, LecturerSearchEntity);
-            return lecturers.Include(l => l.Classes).Select(l => new LecturerEntity(l)).ToList();
+            lecturers = LecturerSearchEntity.SkipAndTake(lecturers);
+            return lecturers.Select(l => new LecturerEntity(l)).ToList();
 
         }
 
@@ -55,27 +56,33 @@ namespace ClassSurvey1.Modules.MLecturers
             Lecturer Lecturer = context.Lecturers.Include(c => c.Classes).FirstOrDefault(c => c.Id == LecturerId);
             if (Lecturer == null) throw new NotFoundException("Class Not Found");
             Lecturer updateLecturer = new Lecturer(lecturerEntity);
-            Common<Lecturer>.Copy(updateLecturer, Lecturer);
+            updateLecturer.CopyTo(Lecturer);
             context.SaveChanges();
-            List<Class> Classes = context.Classes.Where(sc => sc.LectureId == LecturerId).ToList();
+            List<Class> Classes = context.Classes.Where(sc => sc.LecturerId == LecturerId).ToList();
             List<Class> Insert, Update, Delete;
-            Common<Class>.Split(lecturerEntity.Classes.Select(c=>new Class(c)).ToList(), Classes, out Insert, out Update, out Delete);
-            foreach(var c in Insert)
-            {
-                c.Id = Guid.NewGuid();
-                c.LectureId = Lecturer.Id;
-                Classes.Add(c);
-            }
-            foreach(var c in Update)
-            {
-                var curClass = Classes.FirstOrDefault(s => s.Id == c.Id);
-                Common<Class>.Copy(c, curClass);
-            }
-            foreach(var sc in Delete)
-            {
-                var deleteClass = Classes.FirstOrDefault(s => sc.Id == s.Id);
-                Classes.Remove(deleteClass);
-            }
+            List<Class> newClasses = lecturerEntity.Classes == null
+                ? new List<Class>()
+                : lecturerEntity.Classes.Select(c => new Class(c)).ToList();
+            Common<Class>.Split(newClasses, Classes, out Insert, out Update, out Delete);
+            if(Insert!=null)
+                foreach(var c in Insert)
+                {
+                    c.Id = Guid.NewGuid();
+                    c.LecturerId = Lecturer.Id;
+                    Classes.Add(c);
+                }
+            if(Update != null)
+                foreach(var c in Update)
+                {
+                    var curClass = Classes.FirstOrDefault(s => s.Id == c.Id);
+                    Common<Class>.Copy(c, curClass);
+                }
+            if(Delete != null)
+                foreach(var c in Delete)
+                {
+                    var deleteClass = Classes.FirstOrDefault(s => c.Id == s.Id);
+                    Classes.Remove(deleteClass);
+                }
             context.SaveChanges();
             
             return lecturerEntity;
@@ -90,7 +97,7 @@ namespace ClassSurvey1.Modules.MLecturers
             return true;
         }
 
-        public List<LecturerEntity> Create(byte[] data, LecturerEntity lecturerEntity = null)
+        public List<LecturerEntity> CreateFromExcel(byte[] data)
         {
             List<LecturerEntity> lecturerEntities = new List<LecturerEntity>();
             if (data != null)
@@ -104,18 +111,35 @@ namespace ClassSurvey1.Modules.MLecturers
                     userEntity.Username = lecturerExcelModel.UserName;
                     UserService.Create(userEntity);
                     var user = context.Users.FirstOrDefault(u => u.Name == lecturerExcelModel.UserName);
-                    user.Role = 1;
+                    user.Role = 2;
                     //Create User 
                     var newLecturerEntity = new LecturerEntity();
                     newLecturerEntity = lecturerExcelModel.ToEntity(newLecturerEntity);
+                    newLecturerEntity.Id = user.Id;
                     var newLecturer = new Lecturer(newLecturerEntity);
-                    user.Id1 = newLecturer;
                     context.Lecturers.Add(newLecturer);
                     context.SaveChanges();
                     lecturerEntities.Add(new LecturerEntity(newLecturer));
                 }
             }
             return lecturerEntities;
+        }
+
+        public LecturerEntity Create(LecturerExcelModel lecturerExcelModel)
+        {
+            var userEntity = new UserEntity();
+            userEntity.Password = lecturerExcelModel.Password;
+            userEntity.Username = lecturerExcelModel.UserName;
+            var user = context.Users.FirstOrDefault(u => u.Name == lecturerExcelModel.UserName);
+            user.Role = 2;
+            //Create User 
+            var newLecturerEntity = new LecturerEntity();
+            newLecturerEntity = lecturerExcelModel.ToEntity(newLecturerEntity);
+            newLecturerEntity.Id = user.Id;
+            var newLecturer = new Lecturer(newLecturerEntity);
+            context.Lecturers.Add(newLecturer);
+            context.SaveChanges();
+            return newLecturerEntity;
         }
         private void Apply(IQueryable<Lecturer> lecturers, LecturerSearchEntity LecturerSearchEntity)
         {
@@ -131,9 +155,9 @@ namespace ClassSurvey1.Modules.MLecturers
             {
                 lecturers = lecturers.Where(l=>l.Vnumail.Equals(LecturerSearchEntity.Vnumail));
             }
-            if (LecturerSearchEntity.LectureCode != null)
+            if (LecturerSearchEntity.LecturerCode != null)
             {
-                lecturers = lecturers.Where(l=>l.LectureCode.Equals(LecturerSearchEntity.LectureCode));
+                lecturers = lecturers.Where(l=>l.LecturerCode.Equals(LecturerSearchEntity.LecturerCode));
             }
             return;
         }
@@ -147,7 +171,7 @@ namespace ClassSurvey1.Modules.MLecturers
         [Column(4)]
         public string Name { get; set; }
         [Column(6)]
-        public string LectureCode { get; set; }
+        public string LecturerCode { get; set; }
         [Column(5)]
         public string Vnumail { get; set; }
 
@@ -161,7 +185,7 @@ namespace ClassSurvey1.Modules.MLecturers
 
             lecturerEntity.Name = this.Name;
             lecturerEntity.Vnumail = this.Vnumail;
-            lecturerEntity.LectureCode = this.LectureCode;
+            lecturerEntity.LecturerCode = this.LecturerCode;
             return lecturerEntity;
         }
     }

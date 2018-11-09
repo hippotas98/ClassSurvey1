@@ -45,6 +45,12 @@ namespace ClassSurvey1.Modules.MLecturers
         {
             return LecturerService.Delete(UserEntity, LecturerId);
         }
+
+        [HttpPost]
+        public LecturerEntity Create([FromBody]LecturerExcelModel LecturerExcelModel)
+        {
+            return LecturerService.Create(LecturerExcelModel);
+        }
         [HttpPost("Upload")]
         public async Task<IActionResult> Create([FromForm]UploadClass data)
         {
@@ -55,7 +61,7 @@ namespace ClassSurvey1.Modules.MLecturers
                 {
                     await file.CopyToAsync(ms);
                     byte[] bytes = ms.ToArray();
-                    LecturerService.Create(bytes);
+                    LecturerService.CreateFromExcel(bytes);
                 }
             }
             return Ok();

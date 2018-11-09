@@ -22,7 +22,8 @@ namespace ClassSurvey1.Entities
         }
         public SurveyEntity(Survey survey, params object[] args) : base(survey)
         {
-            this.ContentValues = JsonConvert.DeserializeObject<SurveyContent>(this.Content).Values;
+            if(this.Content != null || this.Content != "")
+                this.ContentValues = JsonConvert.DeserializeObject<SurveyContent>(this.Content).Values;
             foreach(var arg in args)
             {
                 if(arg is StudentClass studentClass)

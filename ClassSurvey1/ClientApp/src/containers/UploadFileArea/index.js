@@ -28,7 +28,7 @@ class UploadFileArea extends Component {
       formData.append('myFiles', file);
     })
     console.log(formData);
-    axios.post('/api/Lecturers/Upload', formData)
+    axios.post('/api/Students/Upload', formData)
     .then((res)=>{
       console.log(res)})
   }
