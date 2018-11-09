@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using ClassSurvey1.Models;
 
 namespace ClassSurvey1.Modules
 {
@@ -52,28 +53,27 @@ namespace ClassSurvey1.Modules
         //    return new UserEntity(User);
         //}
 
-        //public UserEntity Create(UserEntity UserEntity)
-        //{
-        //    if (string.IsNullOrEmpty(UserEntity.Username))
-        //        throw new BadRequestException("Bạn chưa điền Username");
-        //    if (string.IsNullOrEmpty(UserEntity.Password))
-        //        throw new BadRequestException("Bạn chưa điền Password");
-        //    User User = IMSContext.Users.Where(u => u.Username.ToLower().Equals(UserEntity.Username.ToLower())).FirstOrDefault();
-        //    if (User == null)
-        //    {
-        //        User = new User();
-        //        User.Id = Guid.NewGuid();
-        //        User.Username = UserEntity.Username;
+        public UserEntity Create(UserEntity UserEntity)
+        {
+            if (string.IsNullOrEmpty(UserEntity.Username))
+                throw new BadRequestException("Bạn chưa điền Username");
+            if (string.IsNullOrEmpty(UserEntity.Password))
+                throw new BadRequestException("Bạn chưa điền Password");
+            User User = context.Users.Where(u => u.Name.ToLower().Equals(UserEntity.Username.ToLower())).FirstOrDefault();
+            if (User == null)
+            {
+                User = new User();
+                User.Id = Guid.NewGuid();
+                User.Name = UserEntity.Username;
+                context.Users.Add(User);
+            }
+            User.Password = SecurePasswordHasher.Hash(UserEntity.Password);
+            context.SaveChanges();
+            UserEntity.Id = User.Id;
+            UserEntity.Password = User.Password;
+            return UserEntity;
 
-        //        IMSContext.Users.Add(User);
-        //    }
-        //    User.Password = SecurePasswordHasher.Hash(UserEntity.Password);
-        //    IMSContext.SaveChanges();
-        //    UserEntity.Id = User.Id;
-        //    UserEntity.Password = User.Password;
-        //    return UserEntity;
-
-        //}
+        }
         //public bool ChangePassword(Guid userId, PasswordEntity passwordEntity)
         //{
         //    

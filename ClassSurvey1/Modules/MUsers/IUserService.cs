@@ -11,7 +11,7 @@ namespace ClassSurvey1.Modules
         //List<UserEntity> Get(SearchUserEntity SearchUserEntity);
         //UserEntity Get(Guid UserId);
         ////bool ChangePassword(Guid UserId, PasswordEntity passwordEntity);
-        //UserEntity Create(UserEntity UserEntity);
+        UserEntity Create(UserEntity UserEntity);
         //UserEntity Update(Guid UserId, UserEntity UserEntity);
         //bool Delete(Guid UserId);
         string Login(UserEntity UserEntity);

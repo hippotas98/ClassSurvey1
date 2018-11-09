@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClassSurvey1.Models;
 
 namespace ClassSurvey1.Modules
 {
@@ -17,18 +18,15 @@ namespace ClassSurvey1.Modules
         public List<string> Roles { get; set; }
         public UserEntity() { }
 
-        //public UserEntity(User User)
-        //{
-        //    this.Id = User.Id;
-        //    this.Username = User.Username;
-        //    this.Password = User.Password;
-        //    ROLES Roles = ROLES.USER;
-        //    if (User.Admin != null) Roles = Roles | ROLES.ADMIN;
-        //    if (User.Student != null) Roles |= ROLES.STUDENT;
-        //    if (User.Lecturer != null) Roles |= ROLES.LECTURER;
-        //    if (User.HrEmployee != null) Roles |= ROLES.HrEmployee;
-        //    this.Roles = Roles.ToString().Replace(" ", "").Split(",").ToList();
-        //}
+        public UserEntity(User User) : base(User)
+        {
+            ROLES Roles = ROLES.USER;
+            if (User.IdNavigation!= null) Roles = Roles | ROLES.ADMIN;
+            if (User.Id2 != null) Roles |= ROLES.STUDENT;
+            if (User.Id1 != null) Roles |= ROLES.LECTURER;
+            
+            this.Roles = Roles.ToString().Replace(" ", "").Split(",").ToList();
+        }
         
     }
 
@@ -45,5 +43,13 @@ namespace ClassSurvey1.Modules
         //    this.Fullname = Admin.Fullname;
         //    this.Organization = Admin.Organization;
         //}
+    }
+
+    public enum ROLES
+    {
+        USER = 0,
+        ADMIN = 1,
+        LECTURER = 2,
+        STUDENT = 4,
     }
 }
