@@ -13,12 +13,12 @@ namespace ClassSurvey1.Entities
         public int StudentNumber { get; set; }
         public Guid LecturerId { get; set; }
         public string Subject { get; set; }
-        public decimal? M { get; set; }
-        public decimal? M1 { get; set; }
-        public decimal? M2 { get; set; }
-        public decimal? Std { get; set; }
-        public decimal? Std1 { get; set; }
-        public decimal? Std2 { get; set; }
+        public string M { get; set; }
+        public string M1 { get; set; }
+        public string M2 { get; set; }
+        public string Std { get; set; }
+        public string Std1 { get; set; }
+        public string Std2 { get; set; }
 
         public LecturerEntity Lecturer { get; set; }
         public ICollection<StudentClassEntity> StudentClasses { get; set; }

@@ -67,23 +67,19 @@ namespace ClassSurvey1.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.M).HasColumnType("decimal(10, 0)");
+                entity.Property(e => e.ClosedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.M1).HasColumnType("decimal(10, 0)");
+                entity.Property(e => e.M).IsUnicode(false);
 
-                entity.Property(e => e.M2).HasColumnType("decimal(10, 0)");
+                entity.Property(e => e.M1).IsUnicode(false);
 
-                entity.Property(e => e.Std)
-                    .HasColumnName("STD")
-                    .HasColumnType("decimal(10, 0)");
+                entity.Property(e => e.OpenedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Std1)
-                    .HasColumnName("STD1")
-                    .HasColumnType("decimal(10, 0)");
+                entity.Property(e => e.Std).HasColumnName("STD");
 
-                entity.Property(e => e.Std2)
-                    .HasColumnName("STD2")
-                    .HasColumnType("decimal(10, 0)");
+                entity.Property(e => e.Std1).HasColumnName("STD1");
+
+                entity.Property(e => e.Std2).HasColumnName("STD2");
 
                 entity.Property(e => e.Subject)
                     .HasMaxLength(255)
@@ -137,6 +133,10 @@ namespace ClassSurvey1.Models
             modelBuilder.Entity<Student>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Class)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Code)
                     .IsRequired()

@@ -17,6 +17,7 @@ namespace ClassSurvey1.Models
         public string Content { get; set; }
         public string Vnumail { get; set; }
         public string Class { get; set; }
+
         public User IdNavigation { get; set; }
         public ICollection<StudentClass> StudentClasses { get; set; }
     }
