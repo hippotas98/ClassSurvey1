@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 
 namespace ClassSurvey1.Entities
 {
@@ -19,7 +20,8 @@ namespace ClassSurvey1.Entities
         public string Std { get; set; }
         public string Std1 { get; set; }
         public string Std2 { get; set; }
-
+        public DateTime openedDate { get; set; }
+        public DateTime closedDate { get; set; }
         public LecturerEntity Lecturer { get; set; }
         public ICollection<StudentClassEntity> StudentClasses { get; set; }
         public ClassEntity() : base() { }
@@ -44,5 +46,7 @@ namespace ClassSurvey1.Entities
         public string ClassCode { get; set; }
         public Guid LecturerId { get; set; }
         public string Subject { get; set; }
+        public DateTime openedDate { get; set; }
+        public DateTime closedDate { get; set; }
     }
 }

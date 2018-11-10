@@ -19,27 +19,27 @@ namespace ClassSurvey1.Modules
            
         }
 
-        //[Route("Count"), HttpGet]
-        //public long Count(SearchUserEntity SearchUserEntity)
-        //{
-        //    return UserService.Count(SearchUserEntity);
-        //}
+        [Route("Count"), HttpGet]
+        public long Count(SearchUserEntity SearchUserEntity)
+        {
+            return UserService.Count(SearchUserEntity);
+        }
 
-        //[Route(""), HttpGet]
-        //public List<UserEntity> Get(SearchUserEntity SearchUserEntity)
-        //{
-        //    return UserService.Get(SearchUserEntity);
-        //}
-        //[Route("{UserId}"), HttpGet]
-        //public UserEntity Get(Guid UserId)
-        //{
-        //    return UserService.Get(UserId);
-        //}
-        //[Route(""), HttpPost]
-        //public UserEntity Create([FromBody]UserEntity UserEntity)
-        //{
-        //    return UserService.Create(UserEntity);
-        //}
+        [Route(""), HttpGet]
+        public List<UserEntity> Get(SearchUserEntity SearchUserEntity)
+        {
+            return UserService.Get(SearchUserEntity);
+        }
+        [Route("{UserId}"), HttpGet]
+        public UserEntity Get(Guid UserId)
+        {
+            return UserService.Get(UserId);
+        }
+        [Route(""), HttpPost]
+        public UserEntity Create([FromBody]UserEntity UserEntity)
+        {
+            return UserService.Create(UserEntity);
+        }
         //[Route("{UserId}"), HttpPut]
         //public UserEntity Update(Guid UserId, [FromBody]UserEntity UserEntity)
         //{
@@ -50,11 +50,11 @@ namespace ClassSurvey1.Modules
         ////{
         ////    return UserService.ChangePassword(UserId, PasswordEntity);
         ////}
-        //[Route("{UserId}"), HttpDelete]
-        //public bool Delete(Guid UserId)
-        //{
-        //    return UserService.Delete(UserId);
-        //}
+        [Route("{UserId}"), HttpDelete]
+        public bool Delete(Guid UserId)
+        {
+            return UserService.Delete(UserId);
+        }
         [Route("Login"), HttpPost]
         public string Login([FromBody] UserEntity UserEntity)
         {

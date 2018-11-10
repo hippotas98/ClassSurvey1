@@ -12,13 +12,13 @@ namespace ClassSurvey1.Modules
 {
     public interface IUserService : ITransientService, ICommonService
     {
-        //long Count(SearchUserEntity SearchUserEntity);
-        //List<UserEntity> Get(SearchUserEntity SearchUserEntity);
-        //UserEntity Get(Guid UserId);
+        long Count(SearchUserEntity SearchUserEntity);
+        List<UserEntity> Get(SearchUserEntity SearchUserEntity);
+        UserEntity Get(Guid UserId);
         ////bool ChangePassword(Guid UserId, PasswordEntity passwordEntity);
         UserEntity Create(UserEntity UserEntity);
         //UserEntity Update(Guid UserId, UserEntity UserEntity);
-        //bool Delete(Guid UserId);
+        bool Delete(Guid UserId);
         string Login(UserEntity UserEntity);
     }
     public class UserService : CommonService, IUserService
@@ -30,39 +30,38 @@ namespace ClassSurvey1.Modules
             this.JWTHandler = JWTHandler;
             this.SecurePasswordHasher = new SecurePasswordHasher();
         }
-        //public long Count(SearchUserEntity SearchUserEntity)
-        //{
-        //    if (SearchUserEntity == null) SearchUserEntity = new SearchUserEntity();
-        //    IQueryable<User> Users = IMSContext.Users;
-        //    Users = SearchUserEntity.ApplyTo(Users);
-        //    return Users.Count();
-        //}
-        //public List<UserEntity> Get(SearchUserEntity SearchUserEntity)
-        //{
-        //    if (SearchUserEntity == null) SearchUserEntity = new SearchUserEntity();
-        //    IQueryable<User> Users = IMSContext.Users
-        //        .Include(u => u.Admin)
-        //        .Include(u => u.Student)
-        //        .Include(u => u.Lecturer)
-        //        .Include(u => u.HrEmployee);
-        //    Users = SearchUserEntity.ApplyTo(Users);
-        //    Users = SearchUserEntity.SkipAndTake(Users);
-        //    return Users.ToList().Select(u => new UserEntity(u)).ToList();
-        //}
+        public long Count(SearchUserEntity SearchUserEntity)
+        {
+            if (SearchUserEntity == null) SearchUserEntity = new SearchUserEntity();
+            IQueryable<User> Users = context.Users;
+            Apply(Users, SearchUserEntity);
+            return Users.Count();
+        }
+        public List<UserEntity> Get(SearchUserEntity SearchUserEntity)
+        {
+            if (SearchUserEntity == null) SearchUserEntity = new SearchUserEntity();
+            IQueryable<User> Users = context.Users
+                .Include(u => u.Admin)
+                .Include(u => u.Student)
+                .Include(u => u.Lecturer);
+                
+            Apply(Users, SearchUserEntity);
+            Users = SearchUserEntity.SkipAndTake(Users);
+            return Users.ToList().Select(u => new UserEntity(u)).ToList();
+        }
 
 
-        //public UserEntity Get(Guid UserId)
-        //{
-        //    User User =  IMSContext.Users
-        //        .Include(u => u.Admin)
-        //        .Include(u => u.Student)
-        //        .Include(u => u.Lecturer)
-        //        .Include(u => u.HrEmployee)
-        //        .Where(u => u.Id == UserId).FirstOrDefault();
-        //    if (User == null)
-        //        throw new BadRequestException("User không tồn tại");
-        //    return new UserEntity(User);
-        //}
+        public UserEntity Get(Guid UserId)
+        {
+            User User =  context.Users
+                .Include(u => u.Admin)
+                .Include(u => u.Student)
+                .Include(u => u.Lecturer)
+                .Where(u => u.Id == UserId).FirstOrDefault();
+            if (User == null)
+                throw new BadRequestException("User không tồn tại");
+            return new UserEntity(User);
+        }
 
         public UserEntity Create(UserEntity UserEntity)
         {
@@ -99,25 +98,25 @@ namespace ClassSurvey1.Modules
         //    }
         //    return false;
         //}
-        //public UserEntity Update(Guid UserId, UserEntity UserEntity)
-        //{
-        //    User User = IMSContext.Users.Where(u => u.Id.Equals(UserEntity.Id)).FirstOrDefault();
-        //    if (User == null)
-        //        throw new BadRequestException("User không tồn tại.");
-        //    UserEntity.ToModel(User);
-        //    User.Password = GetHashString(UserEntity.Password);
-        //    IMSContext.SaveChanges();
-        //    return new UserEntity(User);
-        //}
-        //public bool Delete(Guid UserId)
-        //{
-        //    User User = IMSContext.Users.Where(u => u.Id == UserId).FirstOrDefault();
-        //    if (User == null)
-        //        throw new BadRequestException("User không tồn tại.");
-        //    IMSContext.Users.Remove(User);
-        //    IMSContext.SaveChanges();
-        //    return true;
-        //}
+//        public UserEntity Update(Guid UserId, UserEntity UserEntity)
+//        {
+//            User User = context.Users.Where(u => u.Id.Equals(UserEntity.Id)).FirstOrDefault();
+//            if (User == null)
+//                throw new BadRequestException("User không tồn tại.");
+//            UserEntity.ToModel(User);
+//            User.Password = GetHashString(UserEntity.Password);
+//            IMSContext.SaveChanges();
+//            return new UserEntity(User);
+//        }
+        public bool Delete(Guid UserId)
+        {
+            User User = context.Users.Where(u => u.Id == UserId).FirstOrDefault();
+            if (User == null)
+                throw new BadRequestException("User không tồn tại.");
+            context.Users.Remove(User);
+            context.SaveChanges();
+            return true;
+        }
 
         public string Login(UserEntity UserEntity)
         {
@@ -155,6 +154,15 @@ namespace ClassSurvey1.Modules
                 sb.Append(b.ToString("X2"));
 
             return sb.ToString();
+        }
+
+        private void Apply(IEnumerable<User> source, SearchUserEntity SearchUserEntity)
+        {
+            if (SearchUserEntity.Username != null)
+            {
+                source = source.Where(u =>
+                    u.Name.Contains(SearchUserEntity.Username) || SearchUserEntity.Username.Contains(u.Name));
+            }
         }
     }
 }

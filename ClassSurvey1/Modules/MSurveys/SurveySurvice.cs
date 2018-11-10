@@ -15,7 +15,7 @@ namespace ClassSurvey1.Modules.MSurveys
         SurveyEntity Update(UserEntity userEntity, Guid SurveyId, SurveyEntity SurveyEntity);
         bool Delete(UserEntity userEntity, Guid SurveyId);
         SurveyEntity Create(UserEntity userEntity, SurveyEntity SurveyEntity);
-       
+        
     }
 
     public class SurveySurvice :CommonService, ISurveyService
@@ -70,6 +70,8 @@ namespace ClassSurvey1.Modules.MSurveys
             else throw new BadRequestException("Cannot update");
             return SurveyEntity;
         }
+
+        
         public bool Delete(UserEntity userEntity, Guid SurveyId)
         {
             var CurrentSurvey = context.Surveys.FirstOrDefault(c => c.Id == SurveyId);

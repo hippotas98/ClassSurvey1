@@ -5,7 +5,9 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Threading.Tasks;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Logical;
 
 namespace ClassSurvey1.Modules.MClasses
 {
@@ -39,24 +41,25 @@ namespace ClassSurvey1.Modules.MClasses
             IQueryable<Class> classes = context.Classes;
             Apply(classes, classSearchEntity);
             classes = classSearchEntity.SkipAndTake(classes);
-            return classes.Select(c => new ClassEntity(c)).ToList();
+            return classes.Include(s=>s.StudentClasses).Select(c => new ClassEntity(c)).ToList();
         }
 
+       
         public ClassEntity Get(UserEntity userEntity, Guid ClassId)
         {
             Class Class = context.Classes.Include(c => c.StudentClasses).FirstOrDefault(c => c.Id == ClassId);
             if (Class == null) throw new NotFoundException("Class Not Found");
-            if (//Class.OpenedDate != null && Class.ClosedDate != null && 
-                //DateTime.UtcNow > Class.OpenedDate  && DateTime.UtcNow > Class.ClosedDate &&
-                Class.M == null)
-            {
+//            if (//Class.OpenedDate != null && Class.ClosedDate != null && 
+//                //DateTime.UtcNow > Class.OpenedDate  && DateTime.UtcNow > Class.ClosedDate &&
+//                string.IsNullOrEmpty(Class.M))
+//            {
                 Average();
                 StandardDeviation();
                 Average1();
                 StandardDeviation1();
                 Average2();
                 StandardDeviation2();
-            }
+            //}
             return new ClassEntity(Class);
         }
 
@@ -122,37 +125,33 @@ namespace ClassSurvey1.Modules.MClasses
 
         public ClassEntity Create(byte[] data)
         {
-            Class newClass;
-            newClass = new Class();
+            Class newClass = new Class();
             newClass.Id = Guid.NewGuid();
             if (data != null)
             {
                 List<StudentExcelModel> studentModelEntities = ConvertToIEnumrable<StudentExcelModel>(data).ToList();
-                string lecturerCode = GetPropValueFromExcel(data, "Mã cán bộ");
+                string lecturerCode = GetPropValueFromExcel(data, "Mã cán bộ:");
                 if (lecturerCode == "") throw new BadRequestException("Cannot Get Ma can bo");
                 //newClass.LectureId = new Guid(Id);
                 var lecturer = context.Lecturers.FirstOrDefault(l => l.LecturerCode == lecturerCode);
                 newClass.LecturerId = lecturer.Id;
                 //newClass.Lecture = lecturer;
-                newClass.Subject = GetPropValueFromExcel(data, "Môn học");
-                newClass.ClassCode = GetPropValueFromExcel(data, "Lớp môn học");
+                newClass.Subject = GetPropValueFromExcel(data, "Môn học:");
+                newClass.ClassCode = GetPropValueFromExcel(data, "Lớp môn học:");
+                newClass.StudentNumber = studentModelEntities.Where(sme => sme.Code != null).Count();
+                Console.WriteLine(newClass.Subject +  "  " + newClass.ClassCode + "    " + lecturerCode);
                 var Students = context.Students;
+                context.Classes.Add(newClass);
                 foreach (var studentModel in studentModelEntities.Where(sme => sme.Code != null))
                 {
                     var student = Students.FirstOrDefault(s => s.Code.ToString().Equals(studentModel.Code));
                     var StudentClass = new StudentClass();
                     StudentClass.Id = Guid.NewGuid();
-                    //StudentClass.StudentId = student.Id;
+                    StudentClass.StudentId = student.Id;
                     StudentClass.ClassId = newClass.Id;
-                    //StudentClass.Class = newClass;
-                    StudentClass.Student = student;
                     context.StudentClasses.Add(StudentClass);
                 }
-
-                context.SaveChanges();
             }
-
-            context.Classes.Add(newClass);
             context.SaveChanges();
             return new ClassEntity(newClass);
         }
@@ -175,6 +174,14 @@ namespace ClassSurvey1.Modules.MClasses
                     c.Subject.Contains(classSearchEntity.Subject) || classSearchEntity.Subject.Contains(c.Subject));
             }
 
+            if (classSearchEntity.openedDate != null)
+            {
+                classes = classes.Where(c => c.OpenedDate.Value.CompareTo(DateTime.Now) == -1);
+            }
+            if (classSearchEntity.closedDate != null)
+            {
+                classes = classes.Where(c => c.ClosedDate.Value.CompareTo(DateTime.Now) == -1);
+            }
             return;
         }
         private void Average()
@@ -182,30 +189,45 @@ namespace ClassSurvey1.Modules.MClasses
             List<Class> classes = context.Classes.ToList();
             //List<Dictionary<string, float>> averages = new List<Dictionary<string, float>>();
             foreach(var Class in classes)
-            {
-                
+            {  
                 List<StudentClass> studentClasses = context.StudentClasses.Where(sc => sc.ClassId == Class.Id).ToList(); //Get All Student Classes Which have same ClassId
-                List<Dictionary<string, int>> surveyResults = new List<Dictionary<string, int>>(); //Get Survey Result from all student classes that we found before
-                Dictionary<string, float> Ms = new Dictionary<string, float>(); //Get results with Key and M
-                foreach(var studentClass in studentClasses)
+                if (studentClasses != null)
                 {
-                    Survey survey = context.Surveys.FirstOrDefault(s => s.StudentClassId == studentClass.Id);
-                    surveyResults.Add(JsonConvert.DeserializeObject<Dictionary<string, int>>(survey.Content));
-                }
-                var keys = surveyResults[0].Keys; //Get all keys from survey results
-                foreach(var key in keys)
-                {
-                    List<int> values = surveyResults.Select(sr => sr[key]).ToList(); //find values that have the same key
-                    int sum = 0;
-                    values.ForEach(v => sum += v);
-                    float average = sum / values.Count();
-                    Ms.Add(key, average);
+                    List<Dictionary<string, double>> surveyResults = new List<Dictionary<string, double>>(); //Get Survey Result from all student classes that we found before
+                    Dictionary<string, double> Ms = new Dictionary<string, double>(); //Get results with Key and M
+                    foreach(var studentClass in studentClasses)
+                    {
+                        Survey survey = context.Surveys.FirstOrDefault(s => s.StudentClassId == studentClass.Id);
+                        if (survey != null)
+                        {
+                            Dictionary<string, double> surveyContent = new Dictionary<string, double>();
+                            surveyContent = JsonConvert.DeserializeObject<Dictionary<string, double>>(survey.Content);
+                            surveyResults.Add(surveyContent);
+                        }
+                    }
+
+                    if (surveyResults.Count > 0)
+                    {
+                        var keys = surveyResults[0].Keys; //Get all keys from survey results
+                        foreach(var key in keys)
+                        {
+                            List<int> values = surveyResults.Select(sr => Convert.ToInt32(sr[key])).ToList(); //find values that have the same key
+                            int sum = 0;
+                            values.ForEach(v => sum += v);
+                            double average = sum / values.Count();
+                            Ms.Add(key, average);
                     
+                        }
+                        Class.M = JsonConvert.SerializeObject(Ms);
+                        
+                    }
                 }
-                Class.M = JsonConvert.SerializeObject(Ms);
+                
+                
                 //averages.Add(Ms);
             }
             //return averages;
+            context.SaveChanges();
         }
         private void StandardDeviation()
         {
@@ -214,29 +236,46 @@ namespace ClassSurvey1.Modules.MClasses
             foreach (var Class in classes)
             {
 
-                List<StudentClass> studentClasses = context.StudentClasses.Where(sc => sc.ClassId == Class.Id).ToList(); 
-                List<Dictionary<string, int>> surveyResults = new List<Dictionary<string, int>>();
-                Dictionary<string, double> Stds = new Dictionary<string, double>();
-                foreach (var studentClass in studentClasses)
+                List<StudentClass> studentClasses = context.StudentClasses.Where(sc => sc.ClassId == Class.Id).ToList();
+                if (studentClasses != null)
                 {
-                    Survey survey = context.Surveys.FirstOrDefault(s => s.StudentClassId == studentClass.Id);
-                    surveyResults.Add(JsonConvert.DeserializeObject<Dictionary<string, int>>(survey.Content));
+                    List<Dictionary<string, double>> surveyResults = new List<Dictionary<string, double>>();
+                    Dictionary<string, double> Stds = new Dictionary<string, double>();
+                    foreach (var studentClass in studentClasses)
+                    {
+                        Survey survey = context.Surveys.FirstOrDefault(s => s.StudentClassId == studentClass.Id);
+                        if (survey != null)
+                        {
+                            Dictionary<string, double> surveyContent = 
+                                JsonConvert.DeserializeObject<Dictionary<string, double>>(survey.Content);
+                            surveyResults.Add(surveyContent);
+                        }
+                        
+                    }
+
+                    if (surveyResults.Count > 0)
+                    {
+                        var keys = surveyResults[0].Keys;
+                        foreach (var key in keys)
+                        {
+                            List<int> values = surveyResults.Select(sr => Convert.ToInt32(sr[key])).ToList();
+                            float sum = 0;
+                            values.ForEach(v => sum += v);
+                            float average = sum / values.Count();
+                            double variance = 0;
+                            values.ForEach(v => variance += Math.Pow((v-average),2));
+                            double deviation = Math.Sqrt(variance);
+                            Stds.Add(key, deviation);
+                        }
+                        Class.Std = JsonConvert.SerializeObject(Stds);
+                        
+                    }
+                    
                 }
-                var keys = surveyResults[0].Keys;
-                foreach (var key in keys)
-                {
-                    List<int> values = surveyResults.Select(sr => sr[key]).ToList();
-                    float sum = 0;
-                    values.ForEach(v => sum += v);
-                    float average = sum / values.Count();
-                    double variance = 0;
-                    values.ForEach(v => variance += Math.Pow((v-average),2));
-                    double deviation = Math.Sqrt(variance);
-                    Stds.Add(key, deviation);
-                }
-                Class.Std = JsonConvert.SerializeObject(Stds);
+                
                 //deviations.Add(Stds);
             }
+            context.SaveChanges();
             //return deviations;
         }
         private void Average1()
@@ -246,108 +285,147 @@ namespace ClassSurvey1.Modules.MClasses
             {
                 string subject = Class.Subject;
                 Guid LecturerId = Class.LecturerId;
-                Dictionary<string, float> Ms = JsonConvert.DeserializeObject<Dictionary<string, float>>(Class.M);
-                Dictionary<string, float> M1s = new Dictionary<string, float>();
-                List<string> keys = Ms.Keys.ToList();
-                foreach(var key in keys)
+                if (!String.IsNullOrEmpty(Class.M))
                 {
-                    List<float> values = new List<float>();
-                    foreach(var otherClass in classes.Where(c=>c.LecturerId!=LecturerId  && c.Subject == subject))
+                    Dictionary<string, string> Ms = JsonConvert.DeserializeObject<Dictionary<string, string>>(Class.M);
+                    Dictionary<string, double> M1s = new Dictionary<string, double>();
+                    List<string> keys = Ms.Keys.ToList();
+                    foreach(var key in keys)
                     {
-                        Dictionary<string, float> M = JsonConvert.DeserializeObject<Dictionary<string, float>>(otherClass.M);
-                        values.Add(M[key]);
+                        List<double> values = new List<double>();
+                        foreach(var otherClass in classes.Where(c=>c.LecturerId!=LecturerId  && c.Subject == subject))
+                        {
+                            if (!String.IsNullOrEmpty(otherClass.M))
+                            {
+                                Dictionary<string, string> M = JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.M);
+                                values.Add(Convert.ToDouble(M[key])); 
+                            }
+                            
+                        }
+                        double sum = 0;
+                        values.ForEach(v => sum += v);
+                        double M1 = sum / values.Count();
+                        M1s.Add(key, M1);
                     }
-                    float sum = 0;
-                    values.ForEach(v => sum += v);
-                    float M1 = sum / values.Count();
-                    M1s.Add(key, M1);
+                    Class.M1 = JsonConvert.SerializeObject(M1s);
+                    
                 }
-                Class.M1 = JsonConvert.SerializeObject(M1s);
+                
             }
+            context.SaveChanges();
         }
         private void StandardDeviation1()
         {
             List<Class> classes = context.Classes.ToList();
+            
             foreach (var Class in classes)
             {
-                string subject = Class.Subject;
-                Guid LecturerId = Class.LecturerId;
-                Dictionary<string, float> Stds = JsonConvert.DeserializeObject<Dictionary<string, float>>(Class.Std);
-                Dictionary<string, double> Std1s = new Dictionary<string, double>();
-                List<string> keys = Stds.Keys.ToList();
-                foreach (var key in keys)
+                if(!String.IsNullOrEmpty(Class.Std))
                 {
-                    List<float> values = new List<float>();
-                    foreach (var otherClass in classes.Where(c => c.LecturerId != LecturerId && c.Subject == subject))
+                    string subject = Class.Subject;
+                    Guid LecturerId = Class.LecturerId;
+                    Dictionary<string, string> Stds = JsonConvert.DeserializeObject<Dictionary<string, string>>(Class.Std);
+                    Dictionary<string, double> Std1s = new Dictionary<string, double>();
+                    List<string> keys = Stds.Keys.ToList();
+                    foreach (var key in keys)
                     {
-                        Dictionary<string, float> Std = JsonConvert.DeserializeObject<Dictionary<string, float>>(otherClass.Std);
-                        values.Add(Std[key]);
+                        List<double> values = new List<double>();
+                        foreach (var otherClass in classes.Where(c => c.LecturerId != LecturerId && c.Subject == subject))
+                        {
+                            if (!String.IsNullOrEmpty(otherClass.Std))
+                            {
+                                Dictionary<string, string> Std = JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.Std);
+                                values.Add(Convert.ToDouble(Std[key])); 
+                            }
+                            
+                        }
+                        double sum = 0;
+                        values.ForEach(v => sum += v);
+                        double M1 = sum / values.Count();
+                        double variance = 0;
+                        values.ForEach(v => variance += Math.Pow((v - M1), 2));
+                        double Std1 = Math.Sqrt(variance);
+                        Std1s.Add(key, Std1);
                     }
-                    float sum = 0;
-                    values.ForEach(v => sum += v);
-                    float M1 = sum / values.Count();
-                    double variance = 0;
-                    values.ForEach(v => variance += Math.Pow((v - M1), 2));
-                    double Std1 = Math.Sqrt(variance);
-                    Std1s.Add(key, Std1);
+                    Class.Std1 = JsonConvert.SerializeObject(Std1s);
+                   
                 }
-                Class.M1 = JsonConvert.SerializeObject(Std1s);
+                
             }
+            context.SaveChanges();
         }
         private void Average2()
         {
             List<Class> classes = context.Classes.ToList();
             foreach (var Class in classes)
             {
-                string subject = Class.Subject;
-                Guid LecturerId = Class.LecturerId;
-                Dictionary<string, float> Ms = JsonConvert.DeserializeObject<Dictionary<string, float>>(Class.M);
-                Dictionary<string, float> M2s = new Dictionary<string, float>();
-                List<string> keys = Ms.Keys.ToList();
-                foreach (var key in keys)
+                if (!string.IsNullOrEmpty(Class.M))
                 {
-                    List<float> values = new List<float>();
-                    foreach (var otherClass in classes.Where(c => c.LecturerId == LecturerId && c.Subject != subject))
+                    string subject = Class.Subject;
+                    Guid LecturerId = Class.LecturerId;
+                    Dictionary<string, string> Ms = JsonConvert.DeserializeObject<Dictionary<string, string>>(Class.M);
+                    Dictionary<string, double> M2s = new Dictionary<string, double>();
+                    List<string> keys = Ms.Keys.ToList();
+                    foreach (var key in keys)
                     {
-                        Dictionary<string, float> M = JsonConvert.DeserializeObject<Dictionary<string, float>>(otherClass.M);
-                        values.Add(M[key]);
+                        List<double> values = new List<double>();
+                        foreach (var otherClass in classes.Where(c => c.LecturerId == LecturerId && c.Subject != subject))
+                        {
+                            if (!String.IsNullOrEmpty(otherClass.M))
+                            {
+                                Dictionary<string, string> M = JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.M);
+                                values.Add(Convert.ToDouble(M[key]));
+                            }
+                            
+                        }
+                        double sum = 0;
+                        values.ForEach(v => sum += v);
+                        double M2 = sum / values.Count();
+                        M2s.Add(key, M2);
                     }
-                    float sum = 0;
-                    values.ForEach(v => sum += v);
-                    float M2 = sum / values.Count();
-                    M2s.Add(key, M2);
+                    Class.M2 = JsonConvert.SerializeObject(M2s);
                 }
-                Class.M2 = JsonConvert.SerializeObject(M2s);
             }
+            context.SaveChanges();
         }
         private void StandardDeviation2()
         {
             List<Class> classes = context.Classes.ToList();
             foreach (var Class in classes)
             {
-                string subject = Class.Subject;
-                Guid LecturerId = Class.LecturerId;
-                Dictionary<string, float> Stds = JsonConvert.DeserializeObject<Dictionary<string, float>>(Class.Std);
-                Dictionary<string, double> Std2s = new Dictionary<string, double>();
-                List<string> keys = Stds.Keys.ToList();
-                foreach (var key in keys)
+                if (!String.IsNullOrEmpty(Class.Std))
                 {
-                    List<float> values = new List<float>();
-                    foreach (var otherClass in classes.Where(c => c.LecturerId == LecturerId && c.Subject != subject))
+                    string subject = Class.Subject;
+                    Guid LecturerId = Class.LecturerId;
+                    Dictionary<string, string> Stds = JsonConvert.DeserializeObject<Dictionary<string, string>>(Class.Std);
+                    Dictionary<string, double> Std2s = new Dictionary<string, double>();
+                    List<string> keys = Stds.Keys.ToList();
+                    foreach (var key in keys)
                     {
-                        Dictionary<string, float> Std = JsonConvert.DeserializeObject<Dictionary<string, float>>(otherClass.Std);
-                        values.Add(Std[key]);
+                        List<double> values = new List<double>();
+                        foreach (var otherClass in classes.Where(c => c.LecturerId == LecturerId && c.Subject != subject))
+                        {
+                            if (!String.IsNullOrEmpty(otherClass.Std))
+                            {
+                                Dictionary<string, string> Std = JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.Std);
+                                values.Add(Convert.ToDouble(Std[key]));
+                            }
+                            
+                        }
+                        double sum = 0;
+                        values.ForEach(v => sum += v);
+                        double M2 = sum / values.Count();
+                        double variance = 0;
+                        values.ForEach(v => variance += Math.Pow((v - M2), 2));
+                        double Std2 = Math.Sqrt(variance);
+                        Std2s.Add(key, Std2);
                     }
-                    float sum = 0;
-                    values.ForEach(v => sum += v);
-                    float M2 = sum / values.Count();
-                    double variance = 0;
-                    values.ForEach(v => variance += Math.Pow((v - M2), 2));
-                    double Std2 = Math.Sqrt(variance);
-                    Std2s.Add(key, Std2);
+                    Class.M2 = JsonConvert.SerializeObject(Std2s);
                 }
-                Class.M2 = JsonConvert.SerializeObject(Std2s);
+                
+                
             }
+            context.SaveChanges();
         }
     }
 

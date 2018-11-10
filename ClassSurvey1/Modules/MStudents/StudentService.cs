@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ClassSurvey1.Entities;
 using ClassSurvey1.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClassSurvey1.Modules.MStudents
 {
@@ -15,6 +16,8 @@ namespace ClassSurvey1.Modules.MStudents
         bool Delete(UserEntity userEntity, Guid StudentId);
         List<StudentEntity> CreateFromExcel(byte[] data);
         StudentEntity Create(StudentExcelModel StudentExcelModel);
+        List<ClassEntity> GetClasses(Guid StudentId);
+        
     }
 
     public class StudentService : CommonService, IStudentService
@@ -42,7 +45,19 @@ namespace ClassSurvey1.Modules.MStudents
             Students = StudentSearchEntity.SkipAndTake(Students);
             return Students.Select(l => new StudentEntity(l)).ToList();
         }
+        public List<ClassEntity> GetClasses(Guid StudentId)
+        {
+            List<StudentClass> studentClasses = context.StudentClasses.Where(sc=>sc.StudentId == StudentId).ToList();
+            if(studentClasses == null) throw new NotFoundException("Class Not Found");
+            List<ClassEntity> result = new List<ClassEntity>();
+            foreach (var sc in studentClasses)
+            {
+                result.Add(new ClassEntity(context.Classes.Include(c=>c.StudentClasses).FirstOrDefault(c => c.Id == sc.ClassId)));
+            }
 
+            return result;
+        }
+        
         public StudentEntity Get(UserEntity userEntity, Guid StudentId)
         {
             Student Student = context.Students.FirstOrDefault(c => c.Id == StudentId); ///add include later

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ClassSurvey1.Modules
@@ -111,19 +112,35 @@ namespace ClassSurvey1.Modules
                         //Console.WriteLine(row.ToString() + "," + column.ToString());
                         var value = worksheet.Cells[row, column].Value;
                         if (value != null)
-                            if (value.ToString().Contains(prop))
+                            if (value.ToString().Equals(prop))
                             {
-                                for(int i = 1; i < 10; ++i)
+                                if (worksheet.Cells[row, column].Merge == true)
                                 {
-                                    if(worksheet.Cells[row, column, row, column+i].Merge == false )
+                                    var mergeRange = worksheet.MergedCells[row, column];
+                                    //Console.WriteLine(mergeRange==null ? "empty":mergeRange);
+                                    string strcol = mergeRange.Split(":")[1];
+                                    Regex re = new Regex(@"([a-zA-Z]+)(\d+)");
+                                    Match split = re.Match(strcol);
+                                    int startRow = Convert.ToInt32(split.Groups[2].Value);
+                                    char startColumn = (char)((int)split.Groups[1].Value.ToCharArray()[0] + 1);
+                                    while (startColumn != 'Z')
                                     {
-                                        if(worksheet.Cells[row, column + i].Value != null)
-                                            result = worksheet.Cells[row, column + i].Value.ToString();
-                                        Console.WriteLine(worksheet.Cells[row, column + i].Value);
+                                        string cell = startColumn.ToString() + row;
+                                        if (worksheet.Cells[cell].Value!=null)
+                                        {
+                                            result = worksheet.Cells[cell].Value.ToString();
+                                            break;
+                                        }
+
+                                        startColumn = (char) ((int)startRow + 1);
                                     }
-                                        
-                                    
                                 }
+                                else
+                                {
+                                    
+                                    result = worksheet.Cells[row, column + 1].Value.ToString();
+                                }
+
                                 return result;
                             }
                     }
