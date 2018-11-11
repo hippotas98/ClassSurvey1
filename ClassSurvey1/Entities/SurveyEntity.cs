@@ -23,7 +23,7 @@ namespace ClassSurvey1.Entities
         public SurveyEntity(Survey survey, params object[] args) : base(survey)
         {
             if(this.Content != null || this.Content != "")
-                this.ContentValues = JsonConvert.DeserializeObject<SurveyContent>(this.Content).Values;
+                this.ContentValues = JsonConvert.DeserializeObject<Dictionary<string, int> >(this.Content);
             foreach(var arg in args)
             {
                 if(arg is StudentClass studentClass)
@@ -37,10 +37,7 @@ namespace ClassSurvey1.Entities
             }
         }
     }
-    class SurveyContent
-    {
-        public Dictionary<string, int> Values { get; set; }
-    }
+    
     public partial class SurveySearchEntity : FilterEntity
     {
         public Guid Id { get; set; }

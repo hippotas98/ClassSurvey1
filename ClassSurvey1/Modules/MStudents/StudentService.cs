@@ -102,7 +102,7 @@ namespace ClassSurvey1.Modules.MStudents
 
             context.SaveChanges();
 
-            return StudentEntity;
+            return new StudentEntity(Student);
         }
 
         public bool Delete(UserEntity userEntity, Guid StudentId)

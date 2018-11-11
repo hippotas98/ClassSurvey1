@@ -20,8 +20,8 @@ namespace ClassSurvey1.Entities
         }
         public VersionSurveyEntity(VersionSurvey versionSurvey, params object[] args) : base(versionSurvey)
         {
-            if(this.Content != null || this.Content != "")
-                this.ContentCategory = JsonConvert.DeserializeObject<VersionSurveyContent>(this.Content).Values;
+            if(!String.IsNullOrEmpty(this.Content))
+                this.ContentCategory = JsonConvert.DeserializeObject<Dictionary<string, string>>(this.Content);
             foreach (var arg in args)
             {
                 if(arg is ICollection<Survey> surveys)
@@ -36,8 +36,5 @@ namespace ClassSurvey1.Entities
         public Guid Id { get; set; }
         public int? Version { get; set; }
     }
-    class VersionSurveyContent
-    {
-        public Dictionary<string, string> Values { get; set; }
-    }
+    
 }

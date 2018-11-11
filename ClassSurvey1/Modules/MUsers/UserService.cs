@@ -15,7 +15,7 @@ namespace ClassSurvey1.Modules
         long Count(SearchUserEntity SearchUserEntity);
         List<UserEntity> Get(SearchUserEntity SearchUserEntity);
         UserEntity Get(Guid UserId);
-        ////bool ChangePassword(Guid UserId, PasswordEntity passwordEntity);
+        bool ChangePassword(Guid UserId, PasswordChangeEntity passwordEntity);
         UserEntity Create(UserEntity UserEntity);
         //UserEntity Update(Guid UserId, UserEntity UserEntity);
         bool Delete(Guid UserId);
@@ -84,20 +84,20 @@ namespace ClassSurvey1.Modules
             return UserEntity;
 
         }
-        //public bool ChangePassword(Guid userId, PasswordEntity passwordEntity)
-        //{
-        //    
-        //    User User = IMSContext.Users.Where(u => u.Id.Equals(userId)).FirstOrDefault();
-        //    if (User == null) return false;
-        //    if (SecurePasswordHasher.Verify(passwordEntity.OldPassword, User.Password))
-        //    {
-        //        passwordEntity.UserEntity.ToModel(User);
-        //        User.Password = SecurePasswordHasher.Hash(passwordEntity.UserEntity.Password);
-        //        IMSContext.SaveChanges();
-        //        return true;
-        //    }
-        //    return false;
-        //}
+        public bool ChangePassword(Guid userId, PasswordChangeEntity passwordEntity)
+        {
+            
+            User User = context.Users.FirstOrDefault(u => u.Id.Equals(userId));
+            if (User == null) return false;
+            if (SecurePasswordHasher.Verify(passwordEntity.OldPassword, User.Password))
+            {
+                User newPasswordUser = new User(passwordEntity.UserEntity);
+                User.Password = SecurePasswordHasher.Hash(passwordEntity.UserEntity.Password);
+                context.SaveChanges();
+                return true;
+            }
+            return false;
+        }
 //        public UserEntity Update(Guid UserId, UserEntity UserEntity)
 //        {
 //            User User = context.Users.Where(u => u.Id.Equals(UserEntity.Id)).FirstOrDefault();

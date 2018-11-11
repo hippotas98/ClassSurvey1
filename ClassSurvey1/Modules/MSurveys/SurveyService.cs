@@ -18,7 +18,7 @@ namespace ClassSurvey1.Modules.MSurveys
         
     }
 
-    public class SurveySurvice :CommonService, ISurveyService
+    public class SurveyService :CommonService, ISurveyService
     {
         public int Count(UserEntity userEntity, SurveySearchEntity SurveySearchEntity)
         {
@@ -52,10 +52,10 @@ namespace ClassSurvey1.Modules.MSurveys
                 Survey updateSurvey = new Survey(SurveyEntity);
                 updateSurvey.CopyTo(Survey);
                 context.SaveChanges();
-
+                return new SurveyEntity(Survey);
             }
             else throw new BadRequestException("Cannot update");
-            return SurveyEntity;
+            
         }
 
         public SurveyEntity Create(UserEntity userEntity, SurveyEntity SurveyEntity)
@@ -66,9 +66,11 @@ namespace ClassSurvey1.Modules.MSurveys
                 Survey.Id = Guid.NewGuid();
                 context.Surveys.Add(Survey);
                 context.SaveChanges();
+                return new SurveyEntity(Survey);
             }
             else throw new BadRequestException("Cannot update");
-            return SurveyEntity;
+
+            return null;
         }
 
         
@@ -76,9 +78,16 @@ namespace ClassSurvey1.Modules.MSurveys
         {
             var CurrentSurvey = context.Surveys.FirstOrDefault(c => c.Id == SurveyId);
             if (CurrentSurvey == null) return false;
-            context.Surveys.Remove(CurrentSurvey);
-            context.SaveChanges();
-            return true;
+            SurveyEntity surveyEntity = new SurveyEntity(CurrentSurvey);
+            if (SurveyValidator(surveyEntity))
+            {
+                
+                context.Surveys.Remove(CurrentSurvey);
+                context.SaveChanges();
+                return true;
+            }
+
+            return false;
         }
         private void Apply(IQueryable<Survey> Surveys, SurveySearchEntity SurveySearchEntity)
         {
@@ -95,7 +104,7 @@ namespace ClassSurvey1.Modules.MSurveys
             if (studentClass == null) return false;
             Class Class = context.Classes.Where(c => c.Id == studentClass.ClassId).FirstOrDefault();
             if (Class == null) return false;
-            if (DateTime.Now > Class.OpenedDate)
+            if (DateTime.Now > Class.OpenedDate && DateTime.Now < Class.ClosedDate)
                 return true;
             return false;
         }

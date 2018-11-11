@@ -29,6 +29,14 @@ namespace ClassSurvey1.Modules
         }
         
     }
+
+    public class PasswordChangeEntity
+    {
+        public string OldPassword { get; set; }
+        
+        public UserEntity UserEntity { get; set; }
+        public PasswordChangeEntity(){}
+    }
     public class SearchUserEntity : FilterEntity
     {
         public string Username { get; set; }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ClassSurvey1.Modules.MPolls
 {
-    [Route("Polls")]
+    [Route("api/Polls")]
     public class PollController : CommonController
     {
         private IPollService pollService;

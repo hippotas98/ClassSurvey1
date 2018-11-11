@@ -100,7 +100,7 @@ namespace ClassSurvey1.Modules.MClasses
 
             context.SaveChanges();
 
-            return classEntity;
+            return new ClassEntity(Class);
         }
 
         public bool Delete(UserEntity userEntity, Guid ClassId)

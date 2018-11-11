@@ -45,11 +45,11 @@ namespace ClassSurvey1.Modules
         //{
         //    return UserService.Update(UserId, UserEntity);
         //}
-        ////[Route("{UserId}/ChangePassword"), HttpPut]
-        ////public bool ChangePassword(Guid UserId, [FromBody]PasswordEntity PasswordEntity)
-        ////{
-        ////    return UserService.ChangePassword(UserId, PasswordEntity);
-        ////}
+        [Route("{UserId}/ChangePassword"), HttpPut]
+        public bool ChangePassword(Guid UserId, [FromBody]PasswordChangeEntity PasswordEntity)
+        {
+            return UserService.ChangePassword(UserId, PasswordEntity);
+        }
         [Route("{UserId}"), HttpDelete]
         public bool Delete(Guid UserId)
         {
