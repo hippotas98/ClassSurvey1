@@ -36,10 +36,10 @@ namespace ClassSurvey1.Modules.MLecturers
         public List<LecturerEntity> List(UserEntity userEntity, LecturerSearchEntity LecturerSearchEntity)
         {
             if (LecturerSearchEntity == null) LecturerSearchEntity = new LecturerSearchEntity();
-            IQueryable<Lecturer> lecturers = context.Lecturers;
+            IQueryable<Lecturer> lecturers = context.Lecturers.Include(l=>l.Classes);
             Apply(lecturers, LecturerSearchEntity);
             lecturers = LecturerSearchEntity.SkipAndTake(lecturers);
-            return lecturers.Select(l => new LecturerEntity(l)).ToList();
+            return lecturers.Select(l => new LecturerEntity(l,l.Classes)).ToList();
 
         }
 
@@ -47,7 +47,7 @@ namespace ClassSurvey1.Modules.MLecturers
         {
             Lecturer Lecturer = context.Lecturers.Include(l=>l.Classes).FirstOrDefault(c => c.Id == LecturerId);
             if (Lecturer == null) throw new NotFoundException("Class Not Found");
-            return new LecturerEntity(Lecturer);
+            return new LecturerEntity(Lecturer,Lecturer.Classes);
             
         }
 
@@ -85,7 +85,7 @@ namespace ClassSurvey1.Modules.MLecturers
                 }
             context.SaveChanges();
             
-            return lecturerEntity;
+            return new LecturerEntity(Lecturer, Lecturer.Classes);
         }
 
         public bool Delete(UserEntity userEntity, Guid LecturerId)

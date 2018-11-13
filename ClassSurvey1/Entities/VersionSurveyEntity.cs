@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClassForm1.Entities;
 
 namespace ClassSurvey1.Entities
 {
@@ -13,7 +14,7 @@ namespace ClassSurvey1.Entities
         public int? Version { get; set; }
         public string Content { get; set; }
         public Dictionary<string, string> ContentCategory { get; set; }
-        public ICollection<SurveyEntity> Surveys { get; set; }
+        public ICollection<FormEntity> Forms { get; set; }
         public VersionSurveyEntity() : base()
         {
 
@@ -24,9 +25,9 @@ namespace ClassSurvey1.Entities
                 this.ContentCategory = JsonConvert.DeserializeObject<Dictionary<string, string>>(this.Content);
             foreach (var arg in args)
             {
-                if(arg is ICollection<Survey> surveys)
+                if(arg is ICollection<Form> forms)
                 {
-                    this.Surveys = surveys.Select(s => new SurveyEntity(s)).ToList();
+                    this.Forms = forms.Select(s => new FormEntity(s)).ToList();
                 }
             }
         }

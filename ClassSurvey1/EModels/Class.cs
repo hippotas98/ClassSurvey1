@@ -24,6 +24,11 @@ namespace ClassSurvey1.Models
                     this.StudentClasses.Add(new StudentClass(studentClassEntity));
                 }
             }
+
+            if (classEntity.VersionSurveyEntity != null)
+            {
+                this.VersionSurvey = new VersionSurvey(classEntity.VersionSurveyEntity);
+            }
         }
         public override bool Equals(Base other)
         {

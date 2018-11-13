@@ -13,6 +13,7 @@ namespace ClassSurvey1.Entities
         public string ClassCode { get; set; }
         public int StudentNumber { get; set; }
         public Guid LecturerId { get; set; }
+        public Guid VersionSurveyId { get; set; }
         public string Subject { get; set; }
         public string M { get; set; }
         public string M1 { get; set; }
@@ -24,6 +25,7 @@ namespace ClassSurvey1.Entities
         public DateTime closedDate { get; set; }
         public LecturerEntity Lecturer { get; set; }
         public ICollection<StudentClassEntity> StudentClasses { get; set; }
+        public VersionSurveyEntity VersionSurveyEntity { get; set; }
         public ClassEntity() : base() { }
         public ClassEntity(Class Class, params object[] args) : base(Class)
         {
@@ -35,7 +37,11 @@ namespace ClassSurvey1.Entities
                 }
                 else if (arg is ICollection<StudentClass> students)
                 {
-                    this.StudentClasses = students.Select(s => new StudentClassEntity(s)).ToList();
+                    this.StudentClasses = students.Select(sc => new StudentClassEntity(sc)).ToList();
+                }
+                else if (arg is VersionSurvey versionSurvey)
+                {
+                    this.VersionSurveyEntity = new VersionSurveyEntity(versionSurvey);
                 }
             }
         }
@@ -46,6 +52,7 @@ namespace ClassSurvey1.Entities
         public string ClassCode { get; set; }
         public Guid LecturerId { get; set; }
         public string Subject { get; set; }
+        public Guid VersionId { get; set; }
         public DateTime openedDate { get; set; }
         public DateTime closedDate { get; set; }
     }

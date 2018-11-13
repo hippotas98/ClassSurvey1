@@ -8,6 +8,7 @@ namespace ClassSurvey1.Models
         public Class()
         {
             StudentClasses = new HashSet<StudentClass>();
+            
         }
 
         public Guid Id { get; set; }
@@ -23,8 +24,10 @@ namespace ClassSurvey1.Models
         public string Std2 { get; set; }
         public DateTime? OpenedDate { get; set; }
         public DateTime? ClosedDate { get; set; }
+        public Guid? VersionSurveyId { get; set; }
 
         public Lecturer Lecturer { get; set; }
+        public VersionSurvey VersionSurvey { get; set; }
         public ICollection<StudentClass> StudentClasses { get; set; }
     }
 }

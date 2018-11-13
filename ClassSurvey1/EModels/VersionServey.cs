@@ -11,15 +11,7 @@ namespace ClassSurvey1.Models
         //public VersionSurvey() : base() { }
         public VersionSurvey(VersionSurveyEntity versionSurveyEntity) : base(versionSurveyEntity)
         {
-            if(versionSurveyEntity.Surveys != null)
-            {
-                this.Surveys = new HashSet<Survey>();
-                foreach(var surveyEntity in versionSurveyEntity.Surveys)
-                {
-                    surveyEntity.VersionSurveyId = this.Id;
-                    this.Surveys.Add(new Survey(surveyEntity));
-                }
-            }
+            
         }
         public override bool Equals(Base other)
         {

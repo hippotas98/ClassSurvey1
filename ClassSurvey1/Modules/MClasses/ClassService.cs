@@ -38,34 +38,34 @@ namespace ClassSurvey1.Modules.MClasses
         public List<ClassEntity> List(UserEntity userEntity, ClassSearchEntity classSearchEntity)
         {
             if (classSearchEntity == null) classSearchEntity = new ClassSearchEntity();
-            IQueryable<Class> classes = context.Classes;
+            IQueryable<Class> classes = context.Classes.Include(s=>s.StudentClasses).Include(s => s.VersionSurvey);
             Apply(classes, classSearchEntity);
             classes = classSearchEntity.SkipAndTake(classes);
-            return classes.Include(s=>s.StudentClasses).Select(c => new ClassEntity(c)).ToList();
+            return classes.Select(c => new ClassEntity(c,c.VersionSurvey,c.StudentClasses)).ToList();
         }
 
        
         public ClassEntity Get(UserEntity userEntity, Guid ClassId)
         {
-            Class Class = context.Classes.Include(c => c.StudentClasses).FirstOrDefault(c => c.Id == ClassId);
+            Class Class = context.Classes.Include(c => c.StudentClasses).Include(s => s.VersionSurvey).FirstOrDefault(c => c.Id == ClassId);
             if (Class == null) throw new NotFoundException("Class Not Found");
-//            if (//Class.OpenedDate != null && Class.ClosedDate != null && 
-//                //DateTime.UtcNow > Class.OpenedDate  && DateTime.UtcNow > Class.ClosedDate &&
-//                string.IsNullOrEmpty(Class.M))
-//            {
+            if (//Class.OpenedDate != null && Class.ClosedDate != null && 
+                //DateTime.UtcNow > Class.OpenedDate  && DateTime.UtcNow > Class.ClosedDate &&
+                string.IsNullOrEmpty(Class.M))
+            {
                 Average();
                 StandardDeviation();
                 Average1();
                 StandardDeviation1();
                 Average2();
                 StandardDeviation2();
-            //}
-            return new ClassEntity(Class);
+            }
+            return new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses);
         }
 
         public ClassEntity Update(UserEntity userEntity, Guid ClassId, ClassEntity classEntity)
         {
-            Class Class = context.Classes.Include(c => c.StudentClasses).FirstOrDefault(c => c.Id == ClassId);
+            Class Class = context.Classes.Include(c => c.StudentClasses).Include(s => s.VersionSurvey).FirstOrDefault(c => c.Id == ClassId);
             if (Class == null) throw new NotFoundException("Class Not Found");
             Class updateClass = new Class(classEntity);
             updateClass.CopyTo(Class);
@@ -167,7 +167,10 @@ namespace ClassSurvey1.Modules.MClasses
             {
                 classes = classes.Where(c => c.LecturerId == classSearchEntity.LecturerId);
             }
-
+            if (classSearchEntity.VersionId != null)
+            {
+                classes = classes.Where(c => c.VersionSurveyId == classSearchEntity.VersionId);
+            }
             if (classSearchEntity.Subject != null)
             {
                 classes = classes.Where(c =>
@@ -197,7 +200,7 @@ namespace ClassSurvey1.Modules.MClasses
                     Dictionary<string, double> Ms = new Dictionary<string, double>(); //Get results with Key and M
                     foreach(var studentClass in studentClasses)
                     {
-                        Survey survey = context.Surveys.FirstOrDefault(s => s.StudentClassId == studentClass.Id);
+                        Form survey = context.Forms.FirstOrDefault(s => s.StudentClassId == studentClass.Id);
                         if (survey != null)
                         {
                             Dictionary<string, double> surveyContent = new Dictionary<string, double>();
@@ -243,7 +246,7 @@ namespace ClassSurvey1.Modules.MClasses
                     Dictionary<string, double> Stds = new Dictionary<string, double>();
                     foreach (var studentClass in studentClasses)
                     {
-                        Survey survey = context.Surveys.FirstOrDefault(s => s.StudentClassId == studentClass.Id);
+                        Form survey = context.Forms.FirstOrDefault(s => s.StudentClassId == studentClass.Id);
                         if (survey != null)
                         {
                             Dictionary<string, double> surveyContent = 

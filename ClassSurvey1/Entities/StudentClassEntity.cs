@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClassForm1.Entities;
 
 namespace ClassSurvey1.Entities
 {
@@ -14,7 +15,7 @@ namespace ClassSurvey1.Entities
 
         public ClassEntity Class { get; set; }
         public StudentEntity Student { get; set; }
-        public ICollection<SurveyEntity> Surveys { get; set; }
+        public ICollection<FormEntity> Forms { get; set; }
         public StudentClassEntity() : base() { }
         public StudentClassEntity(StudentClass studentClass, params object[] args) : base(studentClass)
         {
@@ -28,9 +29,9 @@ namespace ClassSurvey1.Entities
                 {
                     this.Class = new ClassEntity(Class);
                 }
-                else if (arg is ICollection<Survey> Surveys)
+                else if (arg is ICollection<Form> Forms)
                 {
-                    this.Surveys = Surveys.Select(s => new SurveyEntity(s)).ToList();
+                    this.Forms = Forms.Select(f => new FormEntity(f)).ToList();
                 }
             }
         }

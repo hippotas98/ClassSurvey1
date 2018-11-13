@@ -7,7 +7,7 @@ namespace ClassSurvey1.Models
     {
         public StudentClass()
         {
-            Surveys = new HashSet<Survey>();
+            Forms = new HashSet<Form>();
         }
 
         public Guid Id { get; set; }
@@ -16,6 +16,6 @@ namespace ClassSurvey1.Models
 
         public Class Class { get; set; }
         public Student Student { get; set; }
-        public ICollection<Survey> Surveys { get; set; }
+        public ICollection<Form> Forms { get; set; }
     }
 }

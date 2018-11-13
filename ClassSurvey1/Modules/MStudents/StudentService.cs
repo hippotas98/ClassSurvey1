@@ -40,10 +40,10 @@ namespace ClassSurvey1.Modules.MStudents
         public List<StudentEntity> List(UserEntity userEntity, StudentSearchEntity StudentSearchEntity)
         {
             if (StudentSearchEntity == null) StudentSearchEntity = new StudentSearchEntity();
-            IQueryable<Student> Students = context.Students;
+            IQueryable<Student> Students = context.Students.Include(s=>s.StudentClasses);
             Apply(Students, StudentSearchEntity);
             Students = StudentSearchEntity.SkipAndTake(Students);
-            return Students.Select(l => new StudentEntity(l)).ToList();
+            return Students.Select(l => new StudentEntity(l,l.StudentClasses)).ToList();
         }
         public List<ClassEntity> GetClasses(Guid StudentId)
         {
@@ -52,7 +52,9 @@ namespace ClassSurvey1.Modules.MStudents
             List<ClassEntity> result = new List<ClassEntity>();
             foreach (var sc in studentClasses)
             {
-                result.Add(new ClassEntity(context.Classes.Include(c=>c.StudentClasses).FirstOrDefault(c => c.Id == sc.ClassId)));
+                var Class = context.Classes.Include(c => c.VersionSurvey).Include(c => c.StudentClasses)
+                    .FirstOrDefault(c => c.Id == sc.ClassId);
+                result.Add(new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses));
             }
 
             return result;
@@ -60,14 +62,14 @@ namespace ClassSurvey1.Modules.MStudents
         
         public StudentEntity Get(UserEntity userEntity, Guid StudentId)
         {
-            Student Student = context.Students.FirstOrDefault(c => c.Id == StudentId); ///add include later
+            Student Student = context.Students.Include(s=>s.StudentClasses).FirstOrDefault(c => c.Id == StudentId); ///add include later
             if (Student == null) throw new NotFoundException("Student Not Found");
-            return new StudentEntity(Student);
+            return new StudentEntity(Student,Student.StudentClasses);
         }
 
         public StudentEntity Update(UserEntity userEntity, Guid StudentId, StudentEntity StudentEntity)
         {
-            Student Student = context.Students.FirstOrDefault(c => c.Id == StudentId); //add include later
+            Student Student = context.Students.Include(s=>s.StudentClasses).FirstOrDefault(c => c.Id == StudentId); //add include later
             if (Student == null) throw new NotFoundException("Student Not Found");
             Student updateStudent = new Student(StudentEntity);
             updateStudent.CopyTo(Student);
@@ -102,7 +104,7 @@ namespace ClassSurvey1.Modules.MStudents
 
             context.SaveChanges();
 
-            return new StudentEntity(Student);
+            return new StudentEntity(Student, Student.StudentClasses);
         }
 
         public bool Delete(UserEntity userEntity, Guid StudentId)

@@ -19,13 +19,13 @@ namespace ClassSurvey1.Models
             {
                 this.Student = new Student(studentClassEntity.Student);
             }
-            if(studentClassEntity.Surveys != null)
+            if(studentClassEntity.Forms != null)
             {
-                this.Surveys = new HashSet<Survey>();
-                foreach(var survey in studentClassEntity.Surveys)
+                this.Forms = new HashSet<Form>();
+                foreach(var form in studentClassEntity.Forms)
                 {
-                    survey.StudentClassId = this.Id;
-                    Surveys.Add(new Survey(survey));
+                    form.StudentClassId = this.Id;
+                    Forms.Add(new Form(form));
                 }
             }
         }

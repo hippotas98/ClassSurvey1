@@ -17,11 +17,11 @@ namespace ClassSurvey1.Models
 
         public virtual DbSet<Admin> Admins { get; set; }
         public virtual DbSet<Class> Classes { get; set; }
+        public virtual DbSet<Form> Forms { get; set; }
         public virtual DbSet<Lecturer> Lecturers { get; set; }
         public virtual DbSet<Operation> Operations { get; set; }
         public virtual DbSet<Student> Students { get; set; }
         public virtual DbSet<StudentClass> StudentClasses { get; set; }
-        public virtual DbSet<Survey> Surveys { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<VersionSurvey> VersionSurveys { get; set; }
 
@@ -90,6 +90,24 @@ namespace ClassSurvey1.Models
                     .HasForeignKey(d => d.LecturerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Class_Lecture");
+
+                entity.HasOne(d => d.VersionSurvey)
+                    .WithMany(p => p.Classes)
+                    .HasForeignKey(d => d.VersionSurveyId)
+                    .HasConstraintName("FK_Class_VersionSurvey");
+            });
+
+            modelBuilder.Entity<Form>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Content).IsRequired();
+
+                entity.HasOne(d => d.StudentClass)
+                    .WithMany(p => p.Forms)
+                    .HasForeignKey(d => d.StudentClassId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Form_StudentClass1");
             });
 
             modelBuilder.Entity<Lecturer>(entity =>
@@ -174,27 +192,6 @@ namespace ClassSurvey1.Models
                     .HasForeignKey(d => d.StudentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StudentClass_Student");
-            });
-
-            modelBuilder.Entity<Survey>(entity =>
-            {
-                entity.ToTable("Survey");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Content).IsRequired();
-
-                entity.HasOne(d => d.StudentClass)
-                    .WithMany(p => p.Surveys)
-                    .HasForeignKey(d => d.StudentClassId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Suvery_StudentClass1");
-
-                entity.HasOne(d => d.VersionSurvey)
-                    .WithMany(p => p.Surveys)
-                    .HasForeignKey(d => d.VersionSurveyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Suvery_VersionSurvey");
             });
 
             modelBuilder.Entity<User>(entity =>
