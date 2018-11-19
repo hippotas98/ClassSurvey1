@@ -38,7 +38,7 @@ namespace ClassSurvey1.Modules.MLecturers
             if (LecturerSearchEntity == null) LecturerSearchEntity = new LecturerSearchEntity();
             IQueryable<Lecturer> lecturers = context.Lecturers.Include(l=>l.Classes);
             Apply(lecturers, LecturerSearchEntity);
-            lecturers = LecturerSearchEntity.SkipAndTake(lecturers);
+            //lecturers = LecturerSearchEntity.SkipAndTake(lecturers);
             return lecturers.Select(l => new LecturerEntity(l,l.Classes)).ToList();
 
         }

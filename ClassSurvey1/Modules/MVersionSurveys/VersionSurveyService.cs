@@ -30,7 +30,7 @@ namespace ClassSurvey1.Modules.MVersionSurveys
             if (VersionSurveySearchEntity == null) VersionSurveySearchEntity = new VersionSurveySearchEntity();
             IQueryable<VersionSurvey> VersionSurveys = context.VersionSurveys;
             Apply(VersionSurveys, VersionSurveySearchEntity);
-            VersionSurveys = VersionSurveySearchEntity.SkipAndTake(VersionSurveys);
+            //VersionSurveys = VersionSurveySearchEntity.SkipAndTake(VersionSurveys);
             return VersionSurveys.Select(l => new VersionSurveyEntity(l)).ToList();
         }
 

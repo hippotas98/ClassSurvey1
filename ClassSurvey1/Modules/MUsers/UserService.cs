@@ -46,7 +46,7 @@ namespace ClassSurvey1.Modules
                 .Include(u => u.Lecturer);
                 
             Apply(Users, SearchUserEntity);
-            Users = SearchUserEntity.SkipAndTake(Users);
+            //Users = SearchUserEntity.SkipAndTake(Users);
             return Users.ToList().Select(u => new UserEntity(u)).ToList();
         }
 

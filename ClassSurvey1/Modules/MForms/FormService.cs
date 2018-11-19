@@ -34,7 +34,7 @@ namespace ClassSurvey1.Modules.MForms
             if (FormSearchEntity == null) FormSearchEntity = new FormSearchEntity();
             IQueryable<Form> Forms = context.Forms;
             Apply(Forms, FormSearchEntity);
-            Forms = FormSearchEntity.SkipAndTake(Forms);
+            //Forms = FormSearchEntity.SkipAndTake(Forms);
             return Forms.Select(l => new FormEntity(l)).ToList();
         }
 

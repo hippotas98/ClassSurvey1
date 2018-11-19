@@ -42,7 +42,7 @@ namespace ClassSurvey1.Modules.MStudents
             if (StudentSearchEntity == null) StudentSearchEntity = new StudentSearchEntity();
             IQueryable<Student> Students = context.Students.Include(s=>s.StudentClasses);
             Apply(Students, StudentSearchEntity);
-            Students = StudentSearchEntity.SkipAndTake(Students);
+            //Students = StudentSearchEntity.SkipAndTake(Students);
             return Students.Select(l => new StudentEntity(l,l.StudentClasses)).ToList();
         }
         public List<ClassEntity> GetClasses(Guid StudentId)

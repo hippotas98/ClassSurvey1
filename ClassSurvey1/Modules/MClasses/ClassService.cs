@@ -40,7 +40,7 @@ namespace ClassSurvey1.Modules.MClasses
             if (classSearchEntity == null) classSearchEntity = new ClassSearchEntity();
             IQueryable<Class> classes = context.Classes.Include(s=>s.StudentClasses).Include(s => s.VersionSurvey);
             Apply(classes, classSearchEntity);
-            classes = classSearchEntity.SkipAndTake(classes);
+            //classes = classSearchEntity.SkipAndTake(classes);
             return classes.Select(c => new ClassEntity(c,c.VersionSurvey,c.StudentClasses)).ToList();
         }
 
