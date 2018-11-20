@@ -55,13 +55,35 @@ namespace ClassSurvey1.Modules
         {
             return UserService.Delete(UserId);
         }
-        [Route("Login"), HttpPost]
-        public string Login([FromBody] UserEntity UserEntity)
+        [Route("Login")]
+        public IActionResult Login([FromBody]UserEntity UserEntity)
         {
-            string token = UserService.Login(UserEntity);
-            var CookieOptions = new CookieOptions { Expires = DateTime.Now.AddDays(30), Path = "/" };
-            Response.Cookies.Append("JWT", token, CookieOptions);
-            return token;
+            try
+            {
+                if (Request.Method == "POST")
+                {
+                    string JWT = UserService.Login(UserEntity);
+                    var CookieOptions = new CookieOptions { Expires = DateTime.Now.AddDays(30), Path = "/" };
+                    Response.Cookies.Append("JWT", JWT, CookieOptions);
+                    return Ok("Authentication Successful");
+                    //return RedirectToPage("/");
+                }
+                //return RedirectToPage("/login");
+                return Ok("Need to login first");
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            return Ok("Authentication failed");
+            //return RedirectToPage("/login");// can doi 
+        }
+        [Route("Logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("JWT");
+            return Ok("Success");
+            //return RedirectToPage("/login");
         }
         [HttpPost("Upload")]
         public async Task<IActionResult> InsertUsers([FromForm]UploadClass data)
