@@ -125,23 +125,20 @@ namespace ClassSurvey1.Modules
             if (string.IsNullOrEmpty(UserEntity.Password))
                 throw new BadRequestException("Bạn chưa điền Password");
 
-            //User User = IMSContext.Users
-            //   .Include(u => u.Admin)
-            //   .Include(u => u.Student)
-            //   .Include(u => u.Lecturer)
-            //   .Include(u => u.HrEmployee)
-            //   .Where(u => u.Username.ToLower().Equals(UserEntity.Username.ToLower())).FirstOrDefault();
+            User User = context.Users
+               .Include(u => u.Admin)
+               .Include(u => u.Student)
+               .Include(u => u.Lecturer)
+               .Where(u => u.Name.ToLower().Equals(UserEntity.Username.ToLower())).FirstOrDefault();
 
-            //if (User == null)
-            //    throw new BadRequestException("User không tồn tại.");
-            string hashed1234 = SecurePasswordHasher.Hash("1234"); //hashed password 
-            //string hashPassword = (UserEntity.Password);
-            if (!SecurePasswordHasher.Verify(UserEntity.Password, hashed1234))
+            if (User == null)
+                throw new BadRequestException("User không tồn tại.");
+            //string hashed1234 = SecurePasswordHasher.Hash("1234"); //hashed password 
+            string hashPassword = (User.Password);
+            if (!SecurePasswordHasher.Verify(UserEntity.Password, hashPassword))
                 throw new BadRequestException("Bạn nhập sai password.");
-            UserEntity = new UserEntity();
-            UserEntity.Password = "1234";
-            UserEntity.Username = "ABC";
-            UserEntity.Roles = new List<string>() { "1", "4" };
+            UserEntity = new UserEntity(User);
+            //UserEntity.Roles = new List<string>() { "1", "4" };
             return JWTHandler.CreateToken(UserEntity);
         }
 
