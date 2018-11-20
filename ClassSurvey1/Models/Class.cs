@@ -8,7 +8,6 @@ namespace ClassSurvey1.Models
         public Class()
         {
             StudentClasses = new HashSet<StudentClass>();
-            
         }
 
         public Guid Id { get; set; }

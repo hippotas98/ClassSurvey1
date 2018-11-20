@@ -69,12 +69,12 @@ namespace ClassSurvey1.Modules
                 throw new BadRequestException("Bạn chưa điền Username");
             if (string.IsNullOrEmpty(UserEntity.Password))
                 throw new BadRequestException("Bạn chưa điền Password");
-            User User = context.Users.Where(u => u.Name.ToLower().Equals(UserEntity.Username.ToLower())).FirstOrDefault();
+            User User = context.Users.Where(u => u.Username.ToLower().Equals(UserEntity.Username.ToLower())).FirstOrDefault();
             if (User == null)
             {
                 User = new User();
                 User.Id = Guid.NewGuid();
-                User.Name = UserEntity.Username;
+                User.Username = UserEntity.Username;
                 context.Users.Add(User);
             }
             User.Password = SecurePasswordHasher.Hash(UserEntity.Password);
@@ -129,7 +129,7 @@ namespace ClassSurvey1.Modules
                .Include(u => u.Admin)
                .Include(u => u.Student)
                .Include(u => u.Lecturer)
-               .Where(u => u.Name.ToLower().Equals(UserEntity.Username.ToLower())).FirstOrDefault();
+               .Where(u => u.Username.ToLower().Equals(UserEntity.Username.ToLower())).FirstOrDefault();
 
             if (User == null)
                 throw new BadRequestException("User không tồn tại.");
@@ -158,7 +158,7 @@ namespace ClassSurvey1.Modules
             if (SearchUserEntity.Username != null)
             {
                 source = source.Where(u =>
-                    u.Name.Contains(SearchUserEntity.Username) || SearchUserEntity.Username.Contains(u.Name));
+                    u.Username.Contains(SearchUserEntity.Username) || SearchUserEntity.Username.Contains(u.Username));
             }
         }
     }

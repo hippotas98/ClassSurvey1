@@ -110,7 +110,7 @@ namespace ClassSurvey1.Modules.MLecturers
                     userEntity.Password = lecturerExcelModel.Password;
                     userEntity.Username = lecturerExcelModel.UserName;
                     UserService.Create(userEntity);
-                    var user = context.Users.FirstOrDefault(u => u.Name == lecturerExcelModel.UserName);
+                    var user = context.Users.FirstOrDefault(u => u.Username == lecturerExcelModel.UserName);
                     user.Role = 2;
                     //Create User 
                     var newLecturerEntity = new LecturerEntity();
@@ -130,7 +130,7 @@ namespace ClassSurvey1.Modules.MLecturers
             var userEntity = new UserEntity();
             userEntity.Password = lecturerExcelModel.Password;
             userEntity.Username = lecturerExcelModel.UserName;
-            var user = context.Users.FirstOrDefault(u => u.Name == lecturerExcelModel.UserName);
+            var user = context.Users.FirstOrDefault(u => u.Username == lecturerExcelModel.UserName);
             user.Role = 2;
             //Create User 
             var newLecturerEntity = new LecturerEntity();

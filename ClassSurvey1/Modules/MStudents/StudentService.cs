@@ -130,7 +130,7 @@ namespace ClassSurvey1.Modules.MStudents
                     userEntity.Password = StudentExcelModel.Password;
                     userEntity.Username = StudentExcelModel.UserName;
                     UserService.Create(userEntity);
-                    var user = context.Users.FirstOrDefault(u => u.Name == StudentExcelModel.UserName);
+                    var user = context.Users.FirstOrDefault(u => u.Username == StudentExcelModel.UserName);
                     user.Role = 4;
                     //Create User 
                     var newStudentEntity = new StudentEntity();
@@ -152,7 +152,7 @@ namespace ClassSurvey1.Modules.MStudents
             userEntity.Password = StudentExcelModel.Password;
             userEntity.Username = StudentExcelModel.UserName;
             UserService.Create(userEntity);
-            var user = context.Users.FirstOrDefault(u => u.Name == StudentExcelModel.UserName);
+            var user = context.Users.FirstOrDefault(u => u.Username == StudentExcelModel.UserName);
             user.Role = 4;
             //Create User 
             var newStudentEntity = new StudentEntity();
