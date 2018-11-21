@@ -24,5 +24,15 @@ namespace ClassSurvey1.Models
 
             return false;
         }
+        public override bool Equals(Object other)
+        {
+            if (other == null) return false;
+            if (other is Admin admin)
+            {
+                return Id.Equals(admin.Id);
+            }
+
+            return false;
+        }
     }
 }

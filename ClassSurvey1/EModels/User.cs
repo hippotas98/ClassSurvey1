@@ -19,5 +19,15 @@ namespace ClassSurvey1.Models
 
             return false;
         }
+        public override bool Equals(object other)
+        {
+            if (other == null) return false;
+            if (other is User User)
+            {
+                return Id.Equals(User.Id);
+            }
+
+            return false;
+        }
     }
 }

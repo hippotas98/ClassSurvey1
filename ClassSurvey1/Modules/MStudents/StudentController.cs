@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ClassSurvey1.Entities;
-using ClassSurvey1.Modules.MClasses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
+using StudentExcelModel = ClassSurvey1.Entities.StudentExcelModel;
 
 namespace ClassSurvey1.Modules.MStudents
 {
@@ -31,7 +32,7 @@ namespace ClassSurvey1.Modules.MStudents
             return StudentService.List(UserEntity, StudentSearchEntity);
         }
         [HttpPut("{StudentId}")]
-        public StudentEntity Update([FromBody] StudentEntity StudentEntity, [FromRoute]Guid StudentId)
+        public StudentEntity Update([FromBody]StudentEntity StudentEntity, [FromRoute]Guid StudentId)
         {
             return StudentService.Update(UserEntity, StudentId, StudentEntity);
         }

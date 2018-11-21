@@ -89,7 +89,7 @@ namespace ClassSurvey1.Modules.MClasses
             Class updateClass = new Class(classEntity);
             updateClass.CopyTo(Class);
             context.SaveChanges();
-            List<StudentClass> studentClasses = context.StudentClasses.Where(sc => sc.ClassId == ClassId).ToList();
+            List<StudentClass> studentClasses = context.StudentClasses.Include(f=>f.Forms).Where(sc => sc.ClassId == ClassId).ToList();
             List<StudentClass> Insert, Update, Delete;
             List<StudentClass> newStudentClasses = classEntity.StudentClasses == null
                 ? new List<StudentClass>()
@@ -101,6 +101,7 @@ namespace ClassSurvey1.Modules.MClasses
                     sc.Id = Guid.NewGuid();
                     sc.ClassId = Class.Id;
                     studentClasses.Add(sc);
+                    context.StudentClasses.Add(sc);
                 }
 
             if (Update != null)
@@ -114,7 +115,14 @@ namespace ClassSurvey1.Modules.MClasses
                 foreach (var sc in Delete)
                 {
                     var deleteStudentClass = studentClasses.FirstOrDefault(s => sc.Id == s.Id);
-                    studentClasses.Remove(deleteStudentClass);
+                    foreach (var form in deleteStudentClass.Forms)
+                    {
+                        context.Forms.Remove(form);
+                    }
+
+                    studentClasses.Remove(sc);
+                    context.SaveChanges();
+                    context.StudentClasses.Remove(deleteStudentClass);
                 }
 
             context.SaveChanges();
@@ -126,15 +134,23 @@ namespace ClassSurvey1.Modules.MClasses
         {
             var CurrentClass = context.Classes.FirstOrDefault(c => c.Id == ClassId);
             if (CurrentClass == null) return false;
-            var CurrentStudentClasses = context.StudentClasses.Where(sc => sc.ClassId == ClassId).ToList();
+            var CurrentStudentClasses = context.StudentClasses.Include(sc=>sc.Forms).Where(sc => sc.ClassId == ClassId).ToList();
             if (CurrentStudentClasses != null)
             {
                 foreach (var sc in CurrentStudentClasses)
                 {
-                    context.StudentClasses.Remove(sc);
+
+                    foreach (var form in sc.Forms)
+                    {
+                        context.Forms.Remove(form);
+                    }
+
+                    context.SaveChanges();
+                    context.StudentClasses.Remove(sc);  
+                        
                 }
 
-                context.SaveChanges();
+                //context.SaveChanges();
             }
 
             context.Classes.Remove(CurrentClass);
@@ -157,7 +173,7 @@ namespace ClassSurvey1.Modules.MClasses
                 //newClass.Lecture = lecturer;
                 newClass.Subject = GetPropValueFromExcel(data, "Môn học:");
                 newClass.ClassCode = GetPropValueFromExcel(data, "Lớp môn học:");
-                newClass.StudentNumber = studentModelEntities.Where(sme => sme.Code != null).Count();
+                newClass.StudentNumber = studentModelEntities.Count(sme => sme.Code != null);
                 Console.WriteLine(newClass.Subject +  "  " + newClass.ClassCode + "    " + lecturerCode);
                 var Students = context.Students;
                 context.Classes.Add(newClass);

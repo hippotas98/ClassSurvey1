@@ -47,20 +47,7 @@ namespace ClassSurvey1.Modules
         //    return Users;
         //}
     }
-    public class AdminEntity
-    {
-        public Guid Id;
-        public string Fullname;
-        public string Organization;
-        public AdminEntity() { }
-
-        //public AdminEntity(Admin Admin)
-        //{
-        //    this.Id = Admin.Id;
-        //    this.Fullname = Admin.Fullname;
-        //    this.Organization = Admin.Organization;
-        //}
-    }
+    
     [Flags]
     public enum ROLES
     {

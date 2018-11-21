@@ -23,5 +23,15 @@ namespace ClassSurvey1.Models
 
             return false;
         }
+        public override bool Equals(object other)
+        {
+            if (other == null) return false;
+            if (other is VersionSurvey VersionSurvey)
+            {
+                return Id.Equals(VersionSurvey.Id);
+            }
+
+            return false;
+        }
     }
 }

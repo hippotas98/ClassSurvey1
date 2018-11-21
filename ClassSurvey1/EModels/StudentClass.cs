@@ -34,7 +34,17 @@ namespace ClassSurvey1.Models
             if (other == null) return false;
             if (other is StudentClass StudentClass)
             {
-                return Id.Equals(StudentClass.Id);
+                return this.ClassId == StudentClass.ClassId && this.StudentId == StudentClass.StudentId;
+            }
+
+            return false;
+        }
+        public override bool Equals(Object other)
+        {
+            if (other == null) return false;
+            if (other is StudentClass StudentClass)
+            {
+                return this.Id.Equals(StudentClass.Id);
             }
 
             return false;

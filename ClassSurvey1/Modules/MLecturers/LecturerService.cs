@@ -37,17 +37,25 @@ namespace ClassSurvey1.Modules.MLecturers
         {
             if (LecturerSearchEntity == null) LecturerSearchEntity = new LecturerSearchEntity();
             IQueryable<Lecturer> lecturers = context.Lecturers.Include(l=>l.Classes);
+            List<User> Users = new List<User>();
             Apply(lecturers, LecturerSearchEntity);
+            foreach (var lecturer in lecturers)
+            {
+                var lecturer_user = context.Users.FirstOrDefault(u => u.Id == lecturer.Id);
+                Users.Add(lecturer_user);
+            }
             //lecturers = LecturerSearchEntity.SkipAndTake(lecturers);
-            return lecturers.Select(l => new LecturerEntity(l,l.Classes)).ToList();
-
+            return lecturers.Join(Users, l => l.Id, u => u.Id, (l, u) => new LecturerEntity(l, l.Classes, u))
+                .ToList();
+           
         }
 
         public LecturerEntity Get(UserEntity userEntity, Guid LecturerId)
         {
             Lecturer Lecturer = context.Lecturers.Include(l=>l.Classes).FirstOrDefault(c => c.Id == LecturerId);
+            User User = context.Users.FirstOrDefault(u => u.Id == LecturerId);
             if (Lecturer == null) throw new NotFoundException("Class Not Found");
-            return new LecturerEntity(Lecturer,Lecturer.Classes);
+            return new LecturerEntity(Lecturer,Lecturer.Classes, User);
             
         }
 
@@ -91,8 +99,14 @@ namespace ClassSurvey1.Modules.MLecturers
         public bool Delete(UserEntity userEntity, Guid LecturerId)
         {
             var CurrentLecturer = context.Lecturers.FirstOrDefault(c => c.Id == LecturerId);
+            
+            var User = context.Users.FirstOrDefault(u => u.Id == LecturerId);
             if (CurrentLecturer == null) return false;
+            if (User == null) return false;
+            
             context.Lecturers.Remove(CurrentLecturer);
+            context.SaveChanges();
+            context.Users.Remove(User);
             context.SaveChanges();
             return true;
         }
@@ -110,8 +124,12 @@ namespace ClassSurvey1.Modules.MLecturers
                     userEntity.Password = lecturerExcelModel.Password;
                     userEntity.Username = lecturerExcelModel.UserName;
                     UserService.Create(userEntity);
-                    var user = context.Users.FirstOrDefault(u => u.Username == lecturerExcelModel.UserName);
-                    user.Role = 2;
+                    
+                    var users = context.Users.Where(u => u.Username == lecturerExcelModel.UserName).ToList();
+                    if (users.Count > 1)
+                        throw new BadRequestException("Trung giang vien co username: " + userEntity.Username);
+                    var user = users.FirstOrDefault();
+                    user.Role = 4;
                     //Create User 
                     var newLecturerEntity = new LecturerEntity();
                     newLecturerEntity = lecturerExcelModel.ToEntity(newLecturerEntity);
@@ -130,7 +148,9 @@ namespace ClassSurvey1.Modules.MLecturers
             var userEntity = new UserEntity();
             userEntity.Password = lecturerExcelModel.Password;
             userEntity.Username = lecturerExcelModel.UserName;
-            var user = context.Users.FirstOrDefault(u => u.Username == lecturerExcelModel.UserName);
+            var users = context.Users.Where(u => u.Username == lecturerExcelModel.UserName).ToList();
+            if(users.Count > 1) throw new BadRequestException("Trung giang vien");
+            var user = users.FirstOrDefault();
             user.Role = 2;
             //Create User 
             var newLecturerEntity = new LecturerEntity();
@@ -147,6 +167,7 @@ namespace ClassSurvey1.Modules.MLecturers
             {
                 lecturers = lecturers.Where(l=>l.Name.Contains(LecturerSearchEntity.Name) || LecturerSearchEntity.Name.Contains(l.Name));
             }
+            
             if (LecturerSearchEntity.Phone != null)
             {
                 lecturers = lecturers.Where(l=>l.Phone.Contains(LecturerSearchEntity.Phone) || LecturerSearchEntity.Phone.Contains(l.Phone));
@@ -162,31 +183,5 @@ namespace ClassSurvey1.Modules.MLecturers
             return;
         }
     }
-    public class LecturerExcelModel 
-    {
-        [Column(2)]
-        public string UserName { get; set; }
-        [Column(3)]
-        public string Password { get; set; }
-        [Column(4)]
-        public string Name { get; set; }
-        [Column(6)]
-        public string LecturerCode { get; set; }
-        [Column(5)]
-        public string Vnumail { get; set; }
-
-        public LecturerEntity ToEntity(LecturerEntity lecturerEntity)
-        {
-            if (lecturerEntity == null)
-            {
-                lecturerEntity.Id = Guid.NewGuid();
-               
-            }
-
-            lecturerEntity.Name = this.Name;
-            lecturerEntity.Vnumail = this.Vnumail;
-            lecturerEntity.LecturerCode = this.LecturerCode;
-            return lecturerEntity;
-        }
-    }
+    
 }

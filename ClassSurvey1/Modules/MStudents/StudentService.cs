@@ -4,6 +4,7 @@ using System.Linq;
 using ClassSurvey1.Entities;
 using ClassSurvey1.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace ClassSurvey1.Modules.MStudents
 {
@@ -42,8 +43,14 @@ namespace ClassSurvey1.Modules.MStudents
             if (StudentSearchEntity == null) StudentSearchEntity = new StudentSearchEntity();
             IQueryable<Student> Students = context.Students.Include(s=>s.StudentClasses);
             Apply(Students, StudentSearchEntity);
+            List<User> Users = new List<User>();
+            foreach (var Student in Students)
+            {
+                var User = context.Users.FirstOrDefault(u => u.Id == Student.Id);
+                Users.Add(User);
+            }
             //Students = StudentSearchEntity.SkipAndTake(Students);
-            return Students.Select(l => new StudentEntity(l,l.StudentClasses)).ToList();
+            return Students.Join(Users, u => u.Id, s => s.Id, (student, user) => new StudentEntity(student, student.StudentClasses, user)).ToList();
         }
         public List<ClassEntity> GetClasses(Guid StudentId)
         {
@@ -52,7 +59,7 @@ namespace ClassSurvey1.Modules.MStudents
             List<ClassEntity> result = new List<ClassEntity>();
             foreach (var sc in studentClasses)
             {
-                var Class = context.Classes.Include(c => c.VersionSurvey).Include(c => c.StudentClasses)
+                var Class = context.Classes.Include(c => c.VersionSurvey).Include(c => c.StudentClasses).ThenInclude(s=>s.Forms)
                     .FirstOrDefault(c => c.Id == sc.ClassId);
                 result.Add(new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses));
             }
@@ -63,8 +70,9 @@ namespace ClassSurvey1.Modules.MStudents
         public StudentEntity Get(UserEntity userEntity, Guid StudentId)
         {
             Student Student = context.Students.Include(s=>s.StudentClasses).FirstOrDefault(c => c.Id == StudentId); ///add include later
+            User User = context.Users.FirstOrDefault(u => u.Id == StudentId);
             if (Student == null) throw new NotFoundException("Student Not Found");
-            return new StudentEntity(Student,Student.StudentClasses);
+            return new StudentEntity(Student,Student.StudentClasses, User);
         }
 
         public StudentEntity Update(UserEntity userEntity, Guid StudentId, StudentEntity StudentEntity)
@@ -86,6 +94,7 @@ namespace ClassSurvey1.Modules.MStudents
                     sc.Id = Guid.NewGuid();
                     sc.StudentId = Student.Id;
                     studentClasses.Add(sc);
+                    context.StudentClasses.Add(sc);
                 }
 
             if (Update != null)
@@ -99,7 +108,13 @@ namespace ClassSurvey1.Modules.MStudents
                 foreach (var sc in Delete)
                 {
                     var deleteClass = studentClasses.FirstOrDefault(s => sc.Id == s.Id);
-                    studentClasses.Remove(deleteClass);
+                    foreach (var form in context.Forms.Where(f => f.StudentClassId == deleteClass.Id).ToList())
+                    {
+                        context.Forms.Remove(form);
+                    }
+
+                    context.SaveChanges();
+                    context.StudentClasses.Remove(deleteClass);
                 }
 
             context.SaveChanges();
@@ -110,8 +125,26 @@ namespace ClassSurvey1.Modules.MStudents
         public bool Delete(UserEntity userEntity, Guid StudentId)
         {
             var CurrentStudent = context.Students.FirstOrDefault(c => c.Id == StudentId);
+            var StudentClasses = context.StudentClasses.Include(f=>f.Forms).Where(sc => sc.StudentId == StudentId);
+            if (StudentClasses != null)
+            {
+                foreach (var studentClass in StudentClasses)
+                {
+                    foreach (var form in studentClass.Forms)
+                    {
+                        context.Forms.Remove(form);
+                    }
+                    context.StudentClasses.Remove(studentClass);
+                }
+            }
+            
+            var User = context.Users.FirstOrDefault(u => u.Id == StudentId);
+            if (User == null) return false;
             if (CurrentStudent == null) return false;
+            
             context.Students.Remove(CurrentStudent);
+            context.SaveChanges();
+            context.Users.Remove(User);
             context.SaveChanges();
             return true;
         }
@@ -130,17 +163,21 @@ namespace ClassSurvey1.Modules.MStudents
                     userEntity.Password = StudentExcelModel.Password;
                     userEntity.Username = StudentExcelModel.UserName;
                     UserService.Create(userEntity);
-                    var user = context.Users.FirstOrDefault(u => u.Username == StudentExcelModel.UserName);
-                    user.Role = 4;
+                    context.SaveChanges();
+                    var users = context.Users.Where(u => u.Username == StudentExcelModel.UserName).ToList();
+                    if(users.Count > 1) throw new BadRequestException("Trung sinh vien co MSSV la " + userEntity.Username);
+                    var user = users.FirstOrDefault();
+                    user.Role = 8;
                     //Create User 
                     var newStudentEntity = new StudentEntity();
                     newStudentEntity = StudentExcelModel.ToEntity(newStudentEntity);
                     newStudentEntity.Id = user.Id;
                     var newStudent = new Student(newStudentEntity);
                     context.Students.Add(newStudent);
-                    context.SaveChanges();
+                    
                     StudentEntities.Add(new StudentEntity(newStudent));
                 }
+                context.SaveChanges();
             }
 
             return StudentEntities;
@@ -152,7 +189,9 @@ namespace ClassSurvey1.Modules.MStudents
             userEntity.Password = StudentExcelModel.Password;
             userEntity.Username = StudentExcelModel.UserName;
             UserService.Create(userEntity);
-            var user = context.Users.FirstOrDefault(u => u.Username == StudentExcelModel.UserName);
+            var users = context.Users.Where(u => u.Username == StudentExcelModel.UserName).ToList();
+            if(users.Count > 1) throw new BadRequestException("Trung sinh vien");
+            var user = users.FirstOrDefault();
             user.Role = 4;
             //Create User 
             var newStudentEntity = new StudentEntity();
@@ -177,32 +216,14 @@ namespace ClassSurvey1.Modules.MStudents
                 Students = Students.Where(l =>
                     l.Code == StudentSearchEntity.Code);
             }
-
+//            if (StudentSearchEntity.Username != null)
+//            {
+//                Students = Students.Where(l =>
+//                    l.Code == StudentSearchEntity.Username);
+//            }
             return;
         }
     }
 
-    public class StudentExcelModel
-    {
-        [Column(2)] public string UserName { get; set; }
-        [Column(3)] public string Password { get; set; }
-        [Column(4)] public string Name { get; set; }
-        //[Column(2)] public string StudentCode { get; set; }
-        [Column(5)] public string Vnumail { get; set; }
-        [Column(6)] public string Class { get; set; }
-
-        public StudentEntity ToEntity(StudentEntity StudentEntity)
-        {
-            if (StudentEntity == null)
-            {
-                StudentEntity.Id = Guid.NewGuid();
-            }
-
-            StudentEntity.Name = this.Name;
-            StudentEntity.Vnumail = this.Vnumail;
-            StudentEntity.Code = this.UserName;
-            StudentEntity.Class = this.Class;
-            return StudentEntity;
-        }
-    }
+    
 }

@@ -8,7 +8,7 @@ namespace ClassSurvey1.Models
 {
     public partial class Student : Base
     {
-
+        //public Student():base() {}
         public Student(StudentEntity studentEntity) : base(studentEntity)
         {
             if (studentEntity.StudentClasses != null)
@@ -22,6 +22,16 @@ namespace ClassSurvey1.Models
             }
         }
         public override bool Equals(Base other)
+        {
+            if (other == null) return false;
+            if (other is Student Student)
+            {
+                return Id.Equals(Student.Id) && Code.Equals(Student.Code);
+            }
+
+            return false;
+        }
+        public override bool Equals(Object other)
         {
             if (other == null) return false;
             if (other is Student Student)

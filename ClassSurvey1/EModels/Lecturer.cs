@@ -33,5 +33,15 @@ namespace ClassSurvey1.Models
 
             return false;
         }
+        public override bool Equals(Object other)
+        {
+            if (other == null) return false;
+            if (other is Lecturer lecturer)
+            {
+                return Id.Equals(lecturer.Id) && LecturerCode.Equals(lecturer.LecturerCode);
+            }
+
+            return false;
+        }
     }
 }

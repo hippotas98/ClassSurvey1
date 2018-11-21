@@ -73,7 +73,7 @@ namespace ClassSurvey1.Modules
             }
             catch (Exception ex)
             {
-                
+                Console.WriteLine(ex.StackTrace);
             }
             return Ok("Authentication failed");
             //return RedirectToPage("/login");// can doi 
