@@ -19,6 +19,7 @@ namespace ClassSurvey1.Modules.MClasses
         ClassEntity Update(UserEntity userEntity, Guid ClassId, ClassEntity classEntity);
         bool Delete(UserEntity userEntity, Guid ClassId);
         ClassEntity Create(byte[] data);
+        float CountSurvey(UserEntity UserEntity, Guid ClassId);
     }
 
     public class ClassService : CommonService, IClassService
@@ -35,6 +36,24 @@ namespace ClassSurvey1.Modules.MClasses
             return classes.Count();
         }
 
+        public float CountSurvey(UserEntity UserEntity, Guid ClassId)
+        {
+            float count = 0;
+            List<StudentClass> studentClasses = context.StudentClasses.Include(sc => sc.Forms)
+                .Where(sc => sc.ClassId == ClassId).ToList();
+            var Class = context.Classes.FirstOrDefault(c => c.Id == ClassId);
+            if(Class == null) throw new BadRequestException("Class not found");
+            foreach (var studentClass in studentClasses)
+            {
+                if (studentClass.Forms != null && studentClass.Forms.Count > 0)
+                {
+                    count += 1;
+                }
+                
+            }
+
+            return count / Class.StudentNumber;
+        }
         public List<ClassEntity> List(UserEntity userEntity, ClassSearchEntity classSearchEntity)
         {
             if (classSearchEntity == null) classSearchEntity = new ClassSearchEntity();

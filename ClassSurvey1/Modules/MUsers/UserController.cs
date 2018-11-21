@@ -26,9 +26,9 @@ namespace ClassSurvey1.Modules
         }
 
         [Route("List"), HttpGet]
-        public List<UserEntity> Get([FromBody]SearchUserEntity SearchUserEntity)
+        public List<UserEntity> List([FromBody]SearchUserEntity SearchUserEntity)
         {
-            return UserService.Get(SearchUserEntity);
+            return UserService.List(SearchUserEntity);
         }
         [Route("{UserId}"), HttpGet]
         public UserEntity Get([FromRoute]Guid UserId)

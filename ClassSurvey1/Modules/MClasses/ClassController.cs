@@ -23,6 +23,12 @@ namespace ClassSurvey1.Modules.MClasses
         {
             return ClassService.Count(UserEntity, classSearchEntity);
         }
+
+        [HttpGet("Count/{ClassId}/Surveys")]
+        public float CountSurvey([FromRoute] Guid ClassId)
+        {
+            return ClassService.CountSurvey(UserEntity, ClassId);
+        }
         [HttpGet("List")]
         public List<ClassEntity> List([FromBody]ClassSearchEntity classSearchEntity)
         {

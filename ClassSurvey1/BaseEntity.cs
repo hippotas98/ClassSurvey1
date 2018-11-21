@@ -118,7 +118,7 @@ namespace ClassSurvey1
             {
                 Skip = 0; Take = 10;
             }
-            return source.Skip(Skip).Take(Take);
+            return source.Skip(Skip*Take).Take(Take);
         }
     }
 

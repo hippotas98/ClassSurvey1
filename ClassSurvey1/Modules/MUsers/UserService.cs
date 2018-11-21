@@ -13,7 +13,7 @@ namespace ClassSurvey1.Modules
     public interface IUserService : ITransientService, ICommonService
     {
         long Count(SearchUserEntity SearchUserEntity);
-        List<UserEntity> Get(SearchUserEntity SearchUserEntity);
+        List<UserEntity> List(SearchUserEntity SearchUserEntity);
         UserEntity Get(Guid UserId);
         bool ChangePassword(Guid UserId, PasswordChangeEntity passwordEntity);
         UserEntity Create(UserEntity UserEntity);
@@ -37,7 +37,7 @@ namespace ClassSurvey1.Modules
             Apply(Users, SearchUserEntity);
             return Users.Count();
         }
-        public List<UserEntity> Get(SearchUserEntity SearchUserEntity)
+        public List<UserEntity> List(SearchUserEntity SearchUserEntity)
         {
             if (SearchUserEntity == null) SearchUserEntity = new SearchUserEntity();
             IQueryable<User> Users = context.Users
@@ -50,7 +50,7 @@ namespace ClassSurvey1.Modules
             return Users.ToList().Select(u => new UserEntity(u)).ToList();
         }
 
-
+        
         public UserEntity Get(Guid UserId)
         {
             User User =  context.Users
