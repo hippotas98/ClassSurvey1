@@ -23,12 +23,12 @@ namespace ClassSurvey1.Modules.MForms
 
 
         [HttpGet("Count")]
-        public int Count([FromBody]FormSearchEntity FormSearchEntity)
+        public int Count(FormSearchEntity FormSearchEntity)
         {
             return FormService.Count(UserEntity, FormSearchEntity);
         }
         [HttpGet("List")]
-        public List<FormEntity> List([FromBody]FormSearchEntity FormSearchEntity)
+        public List<FormEntity> List(FormSearchEntity FormSearchEntity)
         {
             return FormService.List(UserEntity, FormSearchEntity);
         }

@@ -22,12 +22,12 @@ namespace ClassSurvey1.Modules.MStudents
         
         
         [HttpGet("Count")]
-        public int Count([FromBody]StudentSearchEntity StudentSearchEntity)
+        public int Count(StudentSearchEntity StudentSearchEntity)
         {
             return StudentService.Count(UserEntity, StudentSearchEntity);
         }
         [HttpGet("List")]
-        public List<StudentEntity> List([FromBody]StudentSearchEntity StudentSearchEntity)
+        public List<StudentEntity> List(StudentSearchEntity StudentSearchEntity)
         {
             return StudentService.List(UserEntity, StudentSearchEntity);
         }

@@ -21,12 +21,12 @@ namespace ClassSurvey1.Modules.MVersionSurveys
         
         
         [HttpGet("Count")]
-        public int Count([FromBody]VersionSurveySearchEntity VersionSurveySearchEntity)
+        public int Count(VersionSurveySearchEntity VersionSurveySearchEntity)
         {
             return VersionSurveyService.Count(UserEntity, VersionSurveySearchEntity);
         }
         [HttpGet("List")]
-        public List<VersionSurveyEntity> List([FromBody]VersionSurveySearchEntity VersionSurveySearchEntity)
+        public List<VersionSurveyEntity> List(VersionSurveySearchEntity VersionSurveySearchEntity)
         {
             return VersionSurveyService.List(UserEntity, VersionSurveySearchEntity);
         }

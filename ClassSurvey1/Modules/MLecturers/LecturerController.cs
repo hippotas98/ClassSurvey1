@@ -21,7 +21,7 @@ namespace ClassSurvey1.Modules.MLecturers
         
         
         [HttpGet("Count")]
-        public int Count([FromBody]LecturerSearchEntity LecturerSearchEntity)
+        public int Count(LecturerSearchEntity LecturerSearchEntity)
         {
             return LecturerService.Count(UserEntity, LecturerSearchEntity);
         }

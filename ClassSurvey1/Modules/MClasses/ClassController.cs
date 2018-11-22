@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClassSurvey1.Modules.MClasses
 {
     [Route("api/Classes")]
-    [ApiController]
+    
     public class ClassController : CommonController
     {
         private IClassService ClassService;
@@ -19,21 +19,21 @@ namespace ClassSurvey1.Modules.MClasses
             this.ClassService = classService;
         }
         [HttpGet("Count")]
-        public int Count([FromBody]ClassSearchEntity classSearchEntity)
+        public int Count(ClassSearchEntity classSearchEntity)
         {
             return ClassService.Count(UserEntity, classSearchEntity);
         }
-
+        [HttpGet("List")]
+        public List<ClassEntity> List(ClassSearchEntity classSearchEntity)
+        {
+            return ClassService.List(UserEntity, classSearchEntity);
+        }
         [HttpGet("Count/{ClassId}/Surveys")]
         public float CountSurvey([FromRoute] Guid ClassId)
         {
             return ClassService.CountSurvey(UserEntity, ClassId);
         }
-        [HttpGet("List")]
-        public List<ClassEntity> List([FromBody]ClassSearchEntity classSearchEntity)
-        {
-            return ClassService.List(UserEntity, classSearchEntity);
-        }
+        
         [HttpPut("{ClassId}")]
         public ClassEntity Update([FromBody] ClassEntity classEntity, [FromRoute]Guid ClassId)
         {

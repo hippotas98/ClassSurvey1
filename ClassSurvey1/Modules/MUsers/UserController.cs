@@ -20,13 +20,13 @@ namespace ClassSurvey1.Modules
         }
 
         [Route("Count"), HttpGet]
-        public long Count([FromBody]SearchUserEntity SearchUserEntity)
+        public long Count(SearchUserEntity SearchUserEntity)
         {
             return UserService.Count(SearchUserEntity);
         }
 
         [Route("List"), HttpGet]
-        public List<UserEntity> List([FromBody]SearchUserEntity SearchUserEntity)
+        public List<UserEntity> List(SearchUserEntity SearchUserEntity)
         {
             return UserService.List(SearchUserEntity);
         }
