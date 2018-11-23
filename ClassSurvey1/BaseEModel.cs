@@ -21,8 +21,8 @@ namespace ClassSurvey1.Models
             foreach (PropertyInfo source in sources)
                 if ((source.PropertyType.IsGenericType && source.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)) ||
                     source.PropertyType.IsSubclassOf(typeof(Base)) ||
-                    source.Name.Equals("Cx") ||
-                    source.Name.Equals("Id"))
+                    source.Name.Equals("Cx")
+                    || source.Name.Equals("Id"))
                     continue;
                 else
                 {

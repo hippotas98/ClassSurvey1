@@ -22,11 +22,11 @@ namespace ClassSurvey1.Entities
         {
             foreach (var arg in args)
             {
-                if (arg is User user)
-                {
-                    this.Username = User.Username;
-                    
-                }
+//                if (arg is User user)
+//                {
+//                    this.Username = User.Username;
+//                    
+//                }
             }
         }
     }
@@ -48,7 +48,7 @@ namespace ClassSurvey1.Entities
         {
             adminEntity.Name = this.Name;
             adminEntity.Vnumail = this.Vnumail;
-            //adminEntity.Username = this.Username;
+            adminEntity.Username = this.Username;
             return adminEntity;
         }
     }

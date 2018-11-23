@@ -48,6 +48,8 @@ namespace ClassSurvey1.Models
 
                 entity.Property(e => e.Phone).HasMaxLength(50);
 
+                entity.Property(e => e.Username).HasMaxLength(50);
+
                 entity.Property(e => e.Vnumail)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -124,6 +126,8 @@ namespace ClassSurvey1.Models
 
                 entity.Property(e => e.Phone).HasMaxLength(50);
 
+                entity.Property(e => e.Username).HasMaxLength(50);
+
                 entity.Property(e => e.Vnumail)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -164,6 +168,8 @@ namespace ClassSurvey1.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.Username).HasMaxLength(50);
 
                 entity.Property(e => e.Vnumail)
                     .IsRequired()

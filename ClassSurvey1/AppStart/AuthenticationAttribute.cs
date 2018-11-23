@@ -214,6 +214,7 @@ namespace ClassSurvey1
             }
             catch (Exception e)
             {
+                Console.WriteLine(e.StackTrace);
                 return null;
             }
 

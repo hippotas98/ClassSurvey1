@@ -38,24 +38,25 @@ namespace ClassSurvey1.Modules.MAdmins
             IQueryable<Admin> Admins = context.Admins;
             Apply(Admins, AdminSearchEntity);
             //Admins = AdminSearchEntity.SkipAndTake(Admins);
-            List<User> Users = new List<User>();
-            foreach (var admin in Admins)
-            {
-                var admin_user = context.Users.FirstOrDefault(u => u.Id == admin.Id);
-                Users.Add(admin_user);
-            }
-            //lecturers = LecturerSearchEntity.SkipAndTake(lecturers);
-            return Admins.Join(Users, ad => ad.Id, u => u.Id, (ad, u) => new AdminEntity(ad, u))
-                .ToList();
-          
+           
+//            List<User> Users = new List<User>();
+//            foreach (var admin in Admins)
+//            {
+//                var admin_user = context.Users.FirstOrDefault(u => u.Id == admin.Id);
+//                Users.Add(admin_user);
+//            }
+//            
+//            return Admins.Join(Users, ad => ad.Id, u => u.Id, (ad, u) => new AdminEntity(ad, u))
+//                .ToList();
+            return Admins.Select(ad => new AdminEntity(ad)).ToList();
         }
 
         public AdminEntity Get(UserEntity userEntity, Guid AdminId)
         {
             Admin Admin = context.Admins.FirstOrDefault(c => c.Id == AdminId); ///add include later
-            User User = context.Users.FirstOrDefault(u => u.Id == AdminId);                                                           
+            //User User = context.Users.FirstOrDefault(u => u.Id == AdminId);                                                           
             if (Admin == null) throw new NotFoundException("Admin Not Found");
-            return new AdminEntity(Admin, User);
+            return new AdminEntity(Admin);
         }
 
         public AdminEntity Update(UserEntity userEntity, Guid AdminId, AdminEntity AdminEntity)
@@ -77,6 +78,8 @@ namespace ClassSurvey1.Modules.MAdmins
             var users = context.Users.Where(u => u.Username == AdminDto.Username).ToList();
             if(users.Count > 1) throw new BadRequestException("Admin bi trung username " + AdminDto.Username);
             var user = users.FirstOrDefault();
+            user.Role = 2;
+            context.SaveChanges();
             AdminEntity adminEntity = new AdminEntity();
             adminEntity = AdminDto.ToEntity(adminEntity);
             Admin Admin = new Admin(adminEntity);

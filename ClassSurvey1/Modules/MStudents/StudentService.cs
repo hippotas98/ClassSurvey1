@@ -43,14 +43,17 @@ namespace ClassSurvey1.Modules.MStudents
             if (StudentSearchEntity == null) StudentSearchEntity = new StudentSearchEntity();
             IQueryable<Student> Students = context.Students.Include(s=>s.StudentClasses);
             Apply(Students, StudentSearchEntity);
-            List<User> Users = new List<User>();
-            foreach (var Student in Students)
-            {
-                var User = context.Users.FirstOrDefault(u => u.Id == Student.Id);
-                Users.Add(User);
-            }
+//            List<User> Users = new List<User>();
+//            foreach (var Student in Students)
+//            {
+//                var User = context.Users.FirstOrDefault(u => u.Id == Student.Id);
+//                Users.Add(User);
+//            }
+//            
+//            return Students.Join(Users, u => u.Id, s => s.Id, (student, user) => new StudentEntity(student, student.StudentClasses, user)).ToList();
             //Students = StudentSearchEntity.SkipAndTake(Students);
-            return Students.Join(Users, u => u.Id, s => s.Id, (student, user) => new StudentEntity(student, student.StudentClasses, user)).ToList();
+            return Students.Select(s => new StudentEntity(s, s.StudentClasses)).ToList();
+
         }
         public List<ClassEntity> GetClasses(Guid StudentId)
         {
@@ -70,9 +73,9 @@ namespace ClassSurvey1.Modules.MStudents
         public StudentEntity Get(UserEntity userEntity, Guid StudentId)
         {
             Student Student = context.Students.Include(s=>s.StudentClasses).FirstOrDefault(c => c.Id == StudentId); ///add include later
-            User User = context.Users.FirstOrDefault(u => u.Id == StudentId);
+            //User User = context.Users.FirstOrDefault(u => u.Id == StudentId);
             if (Student == null) throw new NotFoundException("Student Not Found");
-            return new StudentEntity(Student,Student.StudentClasses, User);
+            return new StudentEntity(Student,Student.StudentClasses);
         }
 
         public StudentEntity Update(UserEntity userEntity, Guid StudentId, StudentEntity StudentEntity)
@@ -168,6 +171,7 @@ namespace ClassSurvey1.Modules.MStudents
                     if(users.Count > 1) throw new BadRequestException("Trung sinh vien co MSSV la " + userEntity.Username);
                     var user = users.FirstOrDefault();
                     user.Role = 8;
+                    context.SaveChanges();
                     //Create User 
                     var newStudentEntity = new StudentEntity();
                     newStudentEntity = StudentExcelModel.ToEntity(newStudentEntity);
@@ -192,7 +196,8 @@ namespace ClassSurvey1.Modules.MStudents
             var users = context.Users.Where(u => u.Username == StudentExcelModel.UserName).ToList();
             if(users.Count > 1) throw new BadRequestException("Trung sinh vien");
             var user = users.FirstOrDefault();
-            user.Role = 4;
+            user.Role = 8;
+            context.SaveChanges();
             //Create User 
             var newStudentEntity = new StudentEntity();
             newStudentEntity = StudentExcelModel.ToEntity(newStudentEntity);

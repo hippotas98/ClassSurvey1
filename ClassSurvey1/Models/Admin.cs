@@ -10,6 +10,7 @@ namespace ClassSurvey1.Models
         public string Vnumail { get; set; }
         public int? Role { get; set; }
         public string Phone { get; set; }
+        public string Username { get; set; }
 
         public User IdNavigation { get; set; }
     }

@@ -37,25 +37,26 @@ namespace ClassSurvey1.Modules.MLecturers
         {
             if (LecturerSearchEntity == null) LecturerSearchEntity = new LecturerSearchEntity();
             IQueryable<Lecturer> lecturers = context.Lecturers.Include(l=>l.Classes);
-            List<User> Users = new List<User>();
+            //List<User> Users = new List<User>();
             Apply(lecturers, LecturerSearchEntity);
-            foreach (var lecturer in lecturers)
-            {
-                var lecturer_user = context.Users.FirstOrDefault(u => u.Id == lecturer.Id);
-                Users.Add(lecturer_user);
-            }
+//            foreach (var lecturer in lecturers)
+//            {
+//                var lecturer_user = context.Users.FirstOrDefault(u => u.Id == lecturer.Id);
+//                Users.Add(lecturer_user);
+//            }
+//            
+//            return lecturers.Join(Users, l => l.Id, u => u.Id, (l, u) => new LecturerEntity(l, l.Classes, u))
+//                .ToList();
             //lecturers = LecturerSearchEntity.SkipAndTake(lecturers);
-            return lecturers.Join(Users, l => l.Id, u => u.Id, (l, u) => new LecturerEntity(l, l.Classes, u))
-                .ToList();
-           
+            return lecturers.Select(l => new LecturerEntity(l, l.Classes)).ToList();
         }
 
         public LecturerEntity Get(UserEntity userEntity, Guid LecturerId)
         {
             Lecturer Lecturer = context.Lecturers.Include(l=>l.Classes).FirstOrDefault(c => c.Id == LecturerId);
-            User User = context.Users.FirstOrDefault(u => u.Id == LecturerId);
+            //User User = context.Users.FirstOrDefault(u => u.Id == LecturerId);
             if (Lecturer == null) throw new NotFoundException("Class Not Found");
-            return new LecturerEntity(Lecturer,Lecturer.Classes, User);
+            return new LecturerEntity(Lecturer,Lecturer.Classes);
             
         }
 
@@ -130,6 +131,7 @@ namespace ClassSurvey1.Modules.MLecturers
                         throw new BadRequestException("Trung giang vien co username: " + userEntity.Username);
                     var user = users.FirstOrDefault();
                     user.Role = 4;
+                    context.SaveChanges();
                     //Create User 
                     var newLecturerEntity = new LecturerEntity();
                     newLecturerEntity = lecturerExcelModel.ToEntity(newLecturerEntity);
@@ -151,7 +153,8 @@ namespace ClassSurvey1.Modules.MLecturers
             var users = context.Users.Where(u => u.Username == lecturerExcelModel.UserName).ToList();
             if(users.Count > 1) throw new BadRequestException("Trung giang vien");
             var user = users.FirstOrDefault();
-            user.Role = 2;
+            user.Role = 4;
+            context.SaveChanges();
             //Create User 
             var newLecturerEntity = new LecturerEntity();
             newLecturerEntity = lecturerExcelModel.ToEntity(newLecturerEntity);

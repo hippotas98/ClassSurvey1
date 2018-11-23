@@ -74,7 +74,7 @@ namespace ClassSurvey1.Modules
             {
                 User = new User();
                 User.Id = Guid.NewGuid();
-                User.Username = String.Trim(UserEntity.Username);
+                User.Username = UserEntity.Username.Trim();
                 User.Password = SecurePasswordHasher.Hash(UserEntity.Password);
                 context.Users.Add(User);
             }

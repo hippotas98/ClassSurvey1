@@ -28,10 +28,10 @@ namespace ClassSurvey1.Entities
                     this.Classes = classes.Select(c => new ClassEntity(c)).ToList();
                 }
 
-                if (arg is User User)
-                {
-                    this.Username = User.Username;
-                }
+//                if (arg is User User)
+//                {
+//                    this.Username = User.Username;
+//                }
                 
             }
         }
@@ -58,6 +58,7 @@ namespace ClassSurvey1.Entities
                
             }
 
+            lecturerEntity.Username = this.UserName;
             lecturerEntity.Name = this.Name;
             lecturerEntity.Vnumail = this.Vnumail;
             lecturerEntity.LecturerCode = this.LecturerCode;
