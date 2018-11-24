@@ -162,17 +162,18 @@ namespace ClassSurvey1.Modules.MStudents
 
                 foreach (var StudentExcelModel in StudentExcelModels.Where(sem => sem.Name != null))
                 {
+                    //Create user 
                     var userEntity = new UserEntity();
                     userEntity.Password = StudentExcelModel.Password;
-                    userEntity.Username = StudentExcelModel.UserName;
+                    userEntity.Username = StudentExcelModel.UserName.Trim();
                     UserService.Create(userEntity);
                     context.SaveChanges();
                     var users = context.Users.Where(u => u.Username == StudentExcelModel.UserName).ToList();
                     if(users.Count > 1) throw new BadRequestException("Trung sinh vien co MSSV la " + userEntity.Username);
-                    var user = users.FirstOrDefault();
+                    var user = users.First();
                     user.Role = 8;
                     context.SaveChanges();
-                    //Create User 
+                    //Create Entity 
                     var newStudentEntity = new StudentEntity();
                     newStudentEntity = StudentExcelModel.ToEntity(newStudentEntity);
                     newStudentEntity.Id = user.Id;

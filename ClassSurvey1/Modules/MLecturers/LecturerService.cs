@@ -123,7 +123,7 @@ namespace ClassSurvey1.Modules.MLecturers
                 {
                     var userEntity = new UserEntity();
                     userEntity.Password = lecturerExcelModel.Password;
-                    userEntity.Username = lecturerExcelModel.UserName;
+                    userEntity.Username = lecturerExcelModel.UserName.Trim();
                     UserService.Create(userEntity);
                     
                     var users = context.Users.Where(u => u.Username == lecturerExcelModel.UserName).ToList();
