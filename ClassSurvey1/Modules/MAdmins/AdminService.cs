@@ -75,7 +75,7 @@ namespace ClassSurvey1.Modules.MAdmins
             newUserEntity.Password = AdminDto.Password;
             newUserEntity.Username = AdminDto.Username.Trim();
             UserService.Create(newUserEntity);
-            var users = context.Users.Where(u => u.Username == AdminDto.Username).ToList();
+            var users = context.Users.Where(u => u.Username == newUserEntity.Username).ToList();
             if(users.Count > 1) throw new BadRequestException("Admin bi trung username " + AdminDto.Username);
             var user = users.FirstOrDefault();
             user.Role = 2;

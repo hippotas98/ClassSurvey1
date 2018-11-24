@@ -85,7 +85,7 @@ namespace ClassSurvey1
                 app.UseHsts();
             }
 
-            
+            app.UseCors("CorsPolicy");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
@@ -96,7 +96,7 @@ namespace ClassSurvey1
                     name: "default",
                     template: "{controller}/{action=Index}/{id?}");
             });
-            app.UseCors("CorsPolicy");
+            
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
