@@ -192,9 +192,9 @@ namespace ClassSurvey1.Modules.MStudents
         {
             var userEntity = new UserEntity();
             userEntity.Password = StudentExcelModel.Password;
-            userEntity.Username = StudentExcelModel.UserName;
+            userEntity.Username = StudentExcelModel.UserName.Trim();
             UserService.Create(userEntity);
-            var users = context.Users.Where(u => u.Username == StudentExcelModel.UserName).ToList();
+            var users = context.Users.Where(u => u.Username == userEntity.Username).ToList();
             if(users.Count > 1) throw new BadRequestException("Trung sinh vien");
             var user = users.FirstOrDefault();
             user.Role = 8;

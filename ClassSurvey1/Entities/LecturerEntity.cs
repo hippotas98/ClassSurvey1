@@ -40,7 +40,7 @@ namespace ClassSurvey1.Entities
     public class LecturerExcelModel 
     {
         [Column(2)]
-        public string UserName { get; set; }
+        public string Username { get; set; }
         [Column(3)]
         public string Password { get; set; }
         [Column(4)]
@@ -58,7 +58,7 @@ namespace ClassSurvey1.Entities
                
             }
 
-            lecturerEntity.Username = this.UserName;
+            lecturerEntity.Username = this.Username;
             lecturerEntity.Name = this.Name;
             lecturerEntity.Vnumail = this.Vnumail;
             lecturerEntity.LecturerCode = this.LecturerCode;

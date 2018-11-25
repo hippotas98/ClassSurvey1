@@ -123,7 +123,7 @@ namespace ClassSurvey1.Modules.MLecturers
                 {
                     var userEntity = new UserEntity();
                     userEntity.Password = lecturerExcelModel.Password;
-                    userEntity.Username = lecturerExcelModel.UserName.Trim();
+                    userEntity.Username = lecturerExcelModel.Username.Trim();
                     UserService.Create(userEntity);
                     
                     var users = context.Users.Where(u => u.Username == userEntity.Username).ToList();
@@ -149,8 +149,9 @@ namespace ClassSurvey1.Modules.MLecturers
         {
             var userEntity = new UserEntity();
             userEntity.Password = lecturerExcelModel.Password;
-            userEntity.Username = lecturerExcelModel.UserName;
-            var users = context.Users.Where(u => u.Username == lecturerExcelModel.UserName).ToList();
+            userEntity.Username = lecturerExcelModel.Username.Trim();
+            UserService.Create(userEntity);
+            var users = context.Users.Where(u => u.Username == userEntity.Username).ToList();
             if(users.Count > 1) throw new BadRequestException("Trung giang vien");
             var user = users.FirstOrDefault();
             user.Role = 4;
