@@ -40,11 +40,11 @@ namespace ClassSurvey1.Modules
         {
             return UserService.Create(UserEntity);
         }
-        //[Route("{UserId}"), HttpPut]
-        //public UserEntity Update(Guid UserId, [FromBody]UserEntity UserEntity)
-        //{
-        //    return UserService.Update(UserId, UserEntity);
-        //}
+        [Route("{UserId}"), HttpPut]
+        public UserEntity Update(Guid UserId, [FromBody]UserEntity UserEntity)
+        {
+            return UserService.Update(UserId, UserEntity);
+        }
         [Route("{UserId}/ChangePassword"), HttpPut]
         public bool ChangePassword(Guid UserId, [FromBody]PasswordChangeEntity PasswordEntity)
         {

@@ -17,7 +17,7 @@ namespace ClassSurvey1.Modules
         UserEntity Get(Guid UserId);
         bool ChangePassword(Guid UserId, PasswordChangeEntity passwordEntity);
         UserEntity Create(UserEntity UserEntity);
-        //UserEntity Update(Guid UserId, UserEntity UserEntity);
+        UserEntity Update(Guid UserId, UserEntity UserEntity);
         bool Delete(Guid UserId);
         string Login(UserEntity UserEntity);
     }
@@ -92,23 +92,23 @@ namespace ClassSurvey1.Modules
             if (User == null) return false;
             if (SecurePasswordHasher.Verify(passwordEntity.OldPassword, User.Password))
             {
-                User newPasswordUser = new User(passwordEntity.UserEntity);
+                //User newPasswordUser = new User(passwordEntity.UserEntity);
                 User.Password = SecurePasswordHasher.Hash(passwordEntity.UserEntity.Password);
                 context.SaveChanges();
                 return true;
             }
             return false;
         }
-//        public UserEntity Update(Guid UserId, UserEntity UserEntity)
-//        {
-//            User User = context.Users.Where(u => u.Id.Equals(UserEntity.Id)).FirstOrDefault();
-//            if (User == null)
-//                throw new BadRequestException("User không tồn tại.");
-//            UserEntity.ToModel(User);
-//            User.Password = GetHashString(UserEntity.Password);
-//            IMSContext.SaveChanges();
-//            return new UserEntity(User);
-//        }
+        public UserEntity Update(Guid UserId, UserEntity UserEntity)
+        {
+            User User = context.Users.FirstOrDefault(u => u.Id.Equals(UserEntity.Id));
+            if (User == null)
+                throw new BadRequestException("User không tồn tại.");
+            User.Username = UserEntity.Username.Trim(); 
+            User.Password = SecurePasswordHasher.Hash(UserEntity.Password);
+            context.SaveChanges();
+            return new UserEntity(User);
+        }
         public bool Delete(Guid UserId)
         {
             User User = context.Users.Where(u => u.Id == UserId).FirstOrDefault();
