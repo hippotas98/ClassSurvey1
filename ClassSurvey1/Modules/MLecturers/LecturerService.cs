@@ -29,7 +29,7 @@ namespace ClassSurvey1.Modules.MLecturers
         {
             if (LecturerSearchEntity == null) LecturerSearchEntity = new LecturerSearchEntity();
             IQueryable<Lecturer> lecturers = context.Lecturers;
-            Apply(lecturers, LecturerSearchEntity);
+            lecturers = Apply(lecturers, LecturerSearchEntity);
             return lecturers.Count();
         }
 
@@ -38,7 +38,7 @@ namespace ClassSurvey1.Modules.MLecturers
             if (LecturerSearchEntity == null) LecturerSearchEntity = new LecturerSearchEntity();
             IQueryable<Lecturer> lecturers = context.Lecturers.Include(l=>l.Classes);
             //List<User> Users = new List<User>();
-            Apply(lecturers, LecturerSearchEntity);
+            lecturers =  Apply(lecturers, LecturerSearchEntity);
 //            foreach (var lecturer in lecturers)
 //            {
 //                var lecturer_user = context.Users.FirstOrDefault(u => u.Id == lecturer.Id);
@@ -165,13 +165,18 @@ namespace ClassSurvey1.Modules.MLecturers
             context.SaveChanges();
             return newLecturerEntity;
         }
-        private void Apply(IQueryable<Lecturer> lecturers, LecturerSearchEntity LecturerSearchEntity)
+        private IQueryable<Lecturer>  Apply(IQueryable<Lecturer> lecturers, LecturerSearchEntity LecturerSearchEntity)
         {
             if (LecturerSearchEntity.Name != null)
             {
-                lecturers = lecturers.Where(l=>l.Name.Contains(LecturerSearchEntity.Name) || LecturerSearchEntity.Name.Contains(l.Name));
+                lecturers = lecturers.Where(l=>l.Name.ToLower().Contains(LecturerSearchEntity.Name.ToLower()) 
+                                               || LecturerSearchEntity.Name.ToLower().Contains(l.Name.ToLower()));
             }
-            
+            if (LecturerSearchEntity.Username != null)
+            {
+                lecturers = lecturers.Where(l=>l.Username.ToLower().Contains(LecturerSearchEntity.Username.ToLower()) 
+                                               || LecturerSearchEntity.Username.ToLower().Contains(l.Username.ToLower()));
+            }
             if (LecturerSearchEntity.Phone != null)
             {
                 lecturers = lecturers.Where(l=>l.Phone.Contains(LecturerSearchEntity.Phone) || LecturerSearchEntity.Phone.Contains(l.Phone));
@@ -184,7 +189,7 @@ namespace ClassSurvey1.Modules.MLecturers
             {
                 lecturers = lecturers.Where(l=>l.LecturerCode.Equals(LecturerSearchEntity.LecturerCode));
             }
-            return;
+            return lecturers;
         }
     }
     

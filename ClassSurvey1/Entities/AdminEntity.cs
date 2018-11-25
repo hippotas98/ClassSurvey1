@@ -36,6 +36,7 @@ namespace ClassSurvey1.Entities
         public string Name { get; set; }
         public string Vnumail { get; set; }
         public string Phone { get; set; }
+        public string Username { get; set; }
     }
     public class AdminDto
     {

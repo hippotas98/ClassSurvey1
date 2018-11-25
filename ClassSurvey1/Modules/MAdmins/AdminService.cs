@@ -28,7 +28,7 @@ namespace ClassSurvey1.Modules.MAdmins
         {
             if (AdminSearchEntity == null) AdminSearchEntity = new AdminSearchEntity();
             IQueryable<Admin> Admins = context.Admins;
-            Apply(Admins, AdminSearchEntity);
+            Admins = Apply(Admins, AdminSearchEntity);
             return Admins.Count();
         }
         
@@ -36,7 +36,7 @@ namespace ClassSurvey1.Modules.MAdmins
         {
             if (AdminSearchEntity == null) AdminSearchEntity = new AdminSearchEntity();
             IQueryable<Admin> Admins = context.Admins;
-            Apply(Admins, AdminSearchEntity);
+            Admins = Apply(Admins, AdminSearchEntity);
             //Admins = AdminSearchEntity.SkipAndTake(Admins);
            
 //            List<User> Users = new List<User>();
@@ -102,19 +102,23 @@ namespace ClassSurvey1.Modules.MAdmins
             context.SaveChanges();
             return true;
         }
-        private void Apply(IQueryable<Admin> Admins, AdminSearchEntity AdminSearchEntity)
+        private IQueryable<Admin> Apply(IQueryable<Admin> Admins, AdminSearchEntity AdminSearchEntity)
         {
             if (AdminSearchEntity.Name != null)
             {
                 Admins = Admins.Where(ad => ad.Name.ToLower().Contains(AdminSearchEntity.Name.ToLower()) ||
                                             AdminSearchEntity.Name.ToLower().Contains(ad.Name.ToLower()));
             }
-
+            if (AdminSearchEntity.Username != null)
+            {
+                Admins = Admins.Where(ad => ad.Username.ToLower().Contains(AdminSearchEntity.Username.ToLower()) ||
+                                            AdminSearchEntity.Username.ToLower().Contains(ad.Username.ToLower()));
+            }
             if (AdminSearchEntity.Vnumail != null)
             {
                 Admins = Admins.Where(ad => ad.Vnumail == AdminSearchEntity.Vnumail);
             }
-            return;
+            return Admins;
         }
     }
 

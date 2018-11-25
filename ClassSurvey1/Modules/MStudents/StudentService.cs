@@ -34,7 +34,7 @@ namespace ClassSurvey1.Modules.MStudents
         {
             if (StudentSearchEntity == null) StudentSearchEntity = new StudentSearchEntity();
             IQueryable<Student> Students = context.Students;
-            Apply(Students, StudentSearchEntity);
+            Students = Apply(Students, StudentSearchEntity);
             return Students.Count();
         }
 
@@ -42,7 +42,7 @@ namespace ClassSurvey1.Modules.MStudents
         {
             if (StudentSearchEntity == null) StudentSearchEntity = new StudentSearchEntity();
             IQueryable<Student> Students = context.Students.Include(s=>s.StudentClasses);
-            Apply(Students, StudentSearchEntity);
+            Students = Apply(Students, StudentSearchEntity);
 //            List<User> Users = new List<User>();
 //            foreach (var Student in Students)
 //            {
@@ -209,12 +209,12 @@ namespace ClassSurvey1.Modules.MStudents
             return newStudentEntity;
         }
 
-        private void Apply(IQueryable<Student> Students, StudentSearchEntity StudentSearchEntity)
+        private IQueryable<Student> Apply(IQueryable<Student> Students, StudentSearchEntity StudentSearchEntity)
         {
             if (StudentSearchEntity.Name != null)
             {
                 Students = Students.Where(l =>
-                    l.Name.Contains(StudentSearchEntity.Name) || StudentSearchEntity.Name.Contains(l.Name));
+                    l.Name.ToLower().Contains(StudentSearchEntity.Name.ToLower()) || StudentSearchEntity.Name.ToLower().Contains(l.Name.ToLower()));
             }
 
             if (StudentSearchEntity.Code != null)
@@ -222,12 +222,14 @@ namespace ClassSurvey1.Modules.MStudents
                 Students = Students.Where(l =>
                     l.Code == StudentSearchEntity.Code);
             }
-//            if (StudentSearchEntity.Username != null)
-//            {
-//                Students = Students.Where(l =>
-//                    l.Code == StudentSearchEntity.Username);
-//            }
-            return;
+            if (StudentSearchEntity.Username != null)
+            {
+                Students = Students.Where(l =>
+                    l.Username.ToLower().Contains(StudentSearchEntity.Username.ToLower()) 
+                    || StudentSearchEntity.Username.ToLower().Contains(l.Username.ToLower()));
+            }
+
+            return Students;
         }
     }
 
