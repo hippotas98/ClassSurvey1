@@ -228,7 +228,11 @@ namespace ClassSurvey1.Modules.MStudents
                     l.Username.ToLower().Contains(StudentSearchEntity.Username.ToLower()) 
                     || StudentSearchEntity.Username.ToLower().Contains(l.Username.ToLower()));
             }
-
+            if (StudentSearchEntity.Class != null)
+            {
+                Students = Students.Where(l =>
+                    l.Class.ToLower().Equals(StudentSearchEntity.Class.ToLower()));
+            }
             return Students;
         }
     }
