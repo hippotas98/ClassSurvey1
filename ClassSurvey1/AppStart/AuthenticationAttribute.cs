@@ -12,6 +12,7 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Linq;
+using ClassSurvey1.Models;
 using ClassSurvey1.Modules;
 namespace ClassSurvey1
 {
@@ -49,17 +50,17 @@ namespace ClassSurvey1
                     if (isGuid) temp[i] = "*";
                 }
                 Path = string.Join("/", temp);
-                //IMSContext IMSContext = new IMSContext();
-                //Operation Operation = IMSContext.Operations.Where(o => o.Link.Equals(Path) && o.Method.Equals(Method)).FirstOrDefault();
+                ClassSurveyContext Context = new ClassSurveyContext();
+                Operation Operation = Context.Operations.Where(o => o.Link.Equals(Path) && o.Method.Equals(Method)).FirstOrDefault();
 
-                //string role = string.Join(",", JWTEntity.UserEntity.Roles);
-                //ROLES roles = (ROLES)Enum.Parse(typeof(ROLES), role);
-
-                //if (Operation != null && Operation.Role != ROLES.NONE)
-                //{
-                //    if ((Operation.Role & roles) == 0)
-                //        throw new ForbiddenException("Bạn không có quyền truy cập");
-                //}
+                string role = string.Join(",", JWTEntity.UserEntity.Roles);
+                ROLES roles = (ROLES)Enum.Parse(typeof(ROLES), role);
+                var operationRole = (ROLES)Enum.Parse(typeof(ROLES), Operation.Role.ToString());
+                if (Operation != null && operationRole != ROLES.NONE)
+                {
+                    if ((operationRole & roles) == 0)
+                        throw new ForbiddenException("Bạn không có quyền truy cập");
+                }
                 return;
             }
             else
