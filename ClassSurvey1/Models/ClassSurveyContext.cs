@@ -83,9 +83,7 @@ namespace ClassSurvey1.Models
 
                 entity.Property(e => e.Std2).HasColumnName("STD2");
 
-                entity.Property(e => e.Subject)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.Subject).HasMaxLength(255);
 
                 entity.HasOne(d => d.Lecturer)
                     .WithMany(p => p.Classes)

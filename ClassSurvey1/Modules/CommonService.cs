@@ -80,7 +80,7 @@ namespace ClassSurvey1.Modules
                     if (value != null)
                         if (value.ToString().Contains(prop))
                         {
-                            return row;
+                            return row == 1 ? 1 : row-1;
                         }
                 }
             }
@@ -128,7 +128,7 @@ namespace ClassSurvey1.Modules
                                         string cell = startColumn.ToString() + row;
                                         if (worksheet.Cells[cell].Value!=null)
                                         {
-                                            result = worksheet.Cells[cell].Value.ToString();
+                                            result = worksheet.Cells[cell].GetValue<string>();
                                             break;
                                         }
 
@@ -137,8 +137,8 @@ namespace ClassSurvey1.Modules
                                 }
                                 else
                                 {
-                                    
-                                    result = worksheet.Cells[row, column + 1].Value.ToString();
+                                 
+                                    result = worksheet.Cells[row, column + 1].GetValue<string>();
                                 }
 
                                 return result;

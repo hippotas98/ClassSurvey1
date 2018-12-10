@@ -164,27 +164,38 @@ namespace ClassSurvey1.Modules.MClasses
             newClass.Id = Guid.NewGuid();
             if (data != null)
             {
-                List<StudentExcelModel> studentModelEntities = ConvertToIEnumrable<StudentExcelModel>(data).ToList();
-                string lecturerCode = GetPropValueFromExcel(data, "Mã cán bộ:").Trim();
-                if (lecturerCode == "") throw new BadRequestException("Cannot Get Ma can bo");
-                //newClass.LectureId = new Guid(Id);
-                var lecturer = context.Lecturers.FirstOrDefault(l => l.LecturerCode.Trim() == lecturerCode);
-                newClass.LecturerId = lecturer.Id;
-                //newClass.Lecture = lecturer;
-                newClass.Subject = GetPropValueFromExcel(data, "Môn học:");
-                newClass.ClassCode = GetPropValueFromExcel(data, "Lớp môn học:");
-                newClass.StudentNumber = studentModelEntities.Count(sme => sme.Code != null);
-                Console.WriteLine(newClass.Subject +  "  " + newClass.ClassCode + "    " + lecturerCode);
-                var Students = context.Students;
-                context.Classes.Add(newClass);
-                foreach (var studentModel in studentModelEntities.Where(sme => sme.Code != null))
+                try
                 {
-                    var student = Students.FirstOrDefault(s => s.Code.ToString().Trim().Equals(studentModel.Code.Trim()));
-                    var StudentClass = new StudentClass();
-                    StudentClass.Id = Guid.NewGuid();
-                    StudentClass.StudentId = student.Id;
-                    StudentClass.ClassId = newClass.Id;
-                    context.StudentClasses.Add(StudentClass);
+                    List<StudentExcelModel> studentModelEntities =
+                        ConvertToIEnumrable<StudentExcelModel>(data).ToList();
+                    string lecturerCode = GetPropValueFromExcel(data, "Mã cán bộ:").Trim();
+                    if (lecturerCode == "") throw new BadRequestException("Cannot Get Ma can bo");
+                    //newClass.LectureId = new Guid(Id);
+                    var lecturer = context.Lecturers.FirstOrDefault(l => l.LecturerCode.Trim() == lecturerCode);
+                    newClass.LecturerId = lecturer.Id;
+                    //newClass.Lecture = lecturer;
+                    newClass.Subject = GetPropValueFromExcel(data, "Môn học:");
+                    newClass.ClassCode = GetPropValueFromExcel(data, "Lớp môn học:");
+                    newClass.StudentNumber = studentModelEntities.Count(sme => sme.Code != null);
+                    Console.WriteLine(newClass.Subject + "  " + newClass.ClassCode + "    " + lecturerCode);
+                    var Students = context.Students;
+                    context.Classes.Add(newClass);
+                    foreach (var studentModel in studentModelEntities.Where(sme => sme.Code != null))
+                    {
+                        var student = Students.FirstOrDefault(s =>
+                            s.Code.ToString().Trim().Equals(studentModel.Code.Trim()));
+                        if (student == null) throw new BadRequestException("Student not existed");
+                        var StudentClass = new StudentClass();
+                        Console.WriteLine(studentModel.Code);
+                        StudentClass.Id = Guid.NewGuid();
+                        StudentClass.StudentId = student.Id;
+                        StudentClass.ClassId = newClass.Id;
+                        context.StudentClasses.Add(StudentClass);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new BadRequestException(ex.ToString());
                 }
             }
             context.SaveChanges();
