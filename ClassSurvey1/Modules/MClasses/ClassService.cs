@@ -165,10 +165,10 @@ namespace ClassSurvey1.Modules.MClasses
             if (data != null)
             {
                 List<StudentExcelModel> studentModelEntities = ConvertToIEnumrable<StudentExcelModel>(data).ToList();
-                string lecturerCode = GetPropValueFromExcel(data, "Mã cán bộ:");
+                string lecturerCode = GetPropValueFromExcel(data, "Mã cán bộ:").Trim();
                 if (lecturerCode == "") throw new BadRequestException("Cannot Get Ma can bo");
                 //newClass.LectureId = new Guid(Id);
-                var lecturer = context.Lecturers.FirstOrDefault(l => l.LecturerCode == lecturerCode);
+                var lecturer = context.Lecturers.FirstOrDefault(l => l.LecturerCode.Trim() == lecturerCode);
                 newClass.LecturerId = lecturer.Id;
                 //newClass.Lecture = lecturer;
                 newClass.Subject = GetPropValueFromExcel(data, "Môn học:");
@@ -179,7 +179,7 @@ namespace ClassSurvey1.Modules.MClasses
                 context.Classes.Add(newClass);
                 foreach (var studentModel in studentModelEntities.Where(sme => sme.Code != null))
                 {
-                    var student = Students.FirstOrDefault(s => s.Code.ToString().Equals(studentModel.Code));
+                    var student = Students.FirstOrDefault(s => s.Code.ToString().Trim().Equals(studentModel.Code.Trim()));
                     var StudentClass = new StudentClass();
                     StudentClass.Id = Guid.NewGuid();
                     StudentClass.StudentId = student.Id;
