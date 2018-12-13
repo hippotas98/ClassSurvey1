@@ -32,7 +32,7 @@ namespace ClassSurvey1.Modules.MClasses
         {
             if (classSearchEntity == null) classSearchEntity = new ClassSearchEntity();
             IQueryable<Class> classes = context.Classes;
-            classes=Apply(classes, classSearchEntity);
+            classes = Apply(classes, classSearchEntity);
             return classes.Count();
         }
 
@@ -58,7 +58,7 @@ namespace ClassSurvey1.Modules.MClasses
         {
             if (classSearchEntity == null) classSearchEntity = new ClassSearchEntity();
             IQueryable<Class> classes = context.Classes.Include(s=>s.StudentClasses).Include(s => s.VersionSurvey);
-            classes=Apply(classes, classSearchEntity);
+            classes = Apply(classes, classSearchEntity);
             //classes = classSearchEntity.SkipAndTake(classes);
             return classes.Select(c => new ClassEntity(c,c.VersionSurvey,c.StudentClasses)).ToList();
         }
@@ -209,11 +209,11 @@ namespace ClassSurvey1.Modules.MClasses
                 classes = classes.Where(c => c.ClassCode == classSearchEntity.ClassCode);
             }
 
-            if (classSearchEntity.LecturerId != null)
+            if (classSearchEntity.LecturerId != Guid.Empty)
             {
                 classes = classes.Where(c => c.LecturerId == classSearchEntity.LecturerId);
             }
-            if (classSearchEntity.VersionId != null)
+            if (classSearchEntity.VersionId != Guid.Empty)
             {
                 classes = classes.Where(c => c.VersionSurveyId == classSearchEntity.VersionId);
             }
@@ -223,11 +223,11 @@ namespace ClassSurvey1.Modules.MClasses
                     c.Subject.Contains(classSearchEntity.Subject) || classSearchEntity.Subject.Contains(c.Subject));
             }
 
-            if (classSearchEntity.openedDate != null)
+            if (classSearchEntity.openedDate != DateTime.MinValue)
             {
                 classes = classes.Where(c => c.OpenedDate.Value.CompareTo(DateTime.Now) == -1);
             }
-            if (classSearchEntity.closedDate != null)
+            if (classSearchEntity.closedDate != DateTime.MinValue)
             {
                 classes = classes.Where(c => c.ClosedDate.Value.CompareTo(DateTime.Now) == -1);
             }

@@ -22,7 +22,7 @@ namespace ClassSurvey1.Modules.MSurveys
                 Class Class = context.Classes.FirstOrDefault(c => c.Id == Id);
                 Class.OpenedDate = SurveyEntity.openedDate;
                 Class.ClosedDate = SurveyEntity.closedDate;
-                var StudentClasses = context.StudentClasses.Where(sc => sc.ClassId == Id).ToList();
+                //var StudentClasses = context.StudentClasses.Where(sc => sc.ClassId == Id).ToList();
                 Class.VersionSurveyId = SurveyEntity.versionSurveyId;
                 
             }

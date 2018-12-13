@@ -21,7 +21,7 @@ namespace ClassSurvey1.Modules.MVersionSurveys
         {
             if (VersionSurveySearchEntity == null) VersionSurveySearchEntity = new VersionSurveySearchEntity();
             IQueryable<VersionSurvey> VersionSurveys = context.VersionSurveys;
-            Apply(VersionSurveys, VersionSurveySearchEntity);
+            VersionSurveys = Apply(VersionSurveys, VersionSurveySearchEntity);
             return VersionSurveys.Count();
         }
 
@@ -29,7 +29,7 @@ namespace ClassSurvey1.Modules.MVersionSurveys
         {
             if (VersionSurveySearchEntity == null) VersionSurveySearchEntity = new VersionSurveySearchEntity();
             IQueryable<VersionSurvey> VersionSurveys = context.VersionSurveys;
-            Apply(VersionSurveys, VersionSurveySearchEntity);
+            VersionSurveys = Apply(VersionSurveys, VersionSurveySearchEntity);
             //VersionSurveys = VersionSurveySearchEntity.SkipAndTake(VersionSurveys);
             return VersionSurveys.Select(l => new VersionSurveyEntity(l)).ToList();
         }
@@ -66,13 +66,13 @@ namespace ClassSurvey1.Modules.MVersionSurveys
             context.SaveChanges();
             return true;
         }
-        private void Apply(IQueryable<VersionSurvey> VersionSurveys, VersionSurveySearchEntity VersionSurveySearchEntity)
+        private IQueryable<VersionSurvey> Apply(IQueryable<VersionSurvey> VersionSurveys, VersionSurveySearchEntity VersionSurveySearchEntity)
         {
             if (VersionSurveySearchEntity.Version != null)
             {
                 VersionSurveys = VersionSurveys.Where(vs => vs.Version.Equals(VersionSurveySearchEntity.Version));
             }
-            return;
+            return VersionSurveys;
         }
     }
 }

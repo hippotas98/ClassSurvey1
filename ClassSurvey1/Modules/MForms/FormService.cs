@@ -25,7 +25,7 @@ namespace ClassSurvey1.Modules.MForms
         {
             if (FormSearchEntity == null) FormSearchEntity = new FormSearchEntity();
             IQueryable<Form> Forms = context.Forms;
-            Apply(Forms, FormSearchEntity);
+            Forms = Apply(Forms, FormSearchEntity);
             return Forms.Count();
         }
         
@@ -33,7 +33,7 @@ namespace ClassSurvey1.Modules.MForms
         {
             if (FormSearchEntity == null) FormSearchEntity = new FormSearchEntity();
             IQueryable<Form> Forms = context.Forms;
-            Apply(Forms, FormSearchEntity);
+            Forms = Apply(Forms, FormSearchEntity);
             //Forms = FormSearchEntity.SkipAndTake(Forms);
             return Forms.Select(l => new FormEntity(l)).ToList();
         }
@@ -90,13 +90,14 @@ namespace ClassSurvey1.Modules.MForms
 
             return false;
         }
-        private void Apply(IQueryable<Form> Forms, FormSearchEntity FormSearchEntity)
+        private IQueryable<Form> Apply(IQueryable<Form> Forms, FormSearchEntity FormSearchEntity)
         {
-            if (FormSearchEntity.StudentClassId != null)
+            if (FormSearchEntity.StudentClassId != Guid.Empty)
             {
                 Forms = Forms.Where(vs => vs.StudentClassId.Equals(FormSearchEntity.StudentClassId));
             }
-            return;
+
+            return Forms;
         }
         private bool FormValidator(FormEntity FormEntity)
         {
