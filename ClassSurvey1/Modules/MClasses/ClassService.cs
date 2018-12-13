@@ -32,7 +32,7 @@ namespace ClassSurvey1.Modules.MClasses
         {
             if (classSearchEntity == null) classSearchEntity = new ClassSearchEntity();
             IQueryable<Class> classes = context.Classes;
-            Apply(classes, classSearchEntity);
+            classes=Apply(classes, classSearchEntity);
             return classes.Count();
         }
 
@@ -58,7 +58,7 @@ namespace ClassSurvey1.Modules.MClasses
         {
             if (classSearchEntity == null) classSearchEntity = new ClassSearchEntity();
             IQueryable<Class> classes = context.Classes.Include(s=>s.StudentClasses).Include(s => s.VersionSurvey);
-            Apply(classes, classSearchEntity);
+            classes=Apply(classes, classSearchEntity);
             //classes = classSearchEntity.SkipAndTake(classes);
             return classes.Select(c => new ClassEntity(c,c.VersionSurvey,c.StudentClasses)).ToList();
         }
@@ -202,7 +202,7 @@ namespace ClassSurvey1.Modules.MClasses
             return new ClassEntity(newClass);
         }
 
-        private void Apply(IQueryable<Class> classes, ClassSearchEntity classSearchEntity)
+        private IQueryable<Class> Apply(IQueryable<Class> classes, ClassSearchEntity classSearchEntity)
         {
             if (classSearchEntity.ClassCode != null)
             {
@@ -231,7 +231,7 @@ namespace ClassSurvey1.Modules.MClasses
             {
                 classes = classes.Where(c => c.ClosedDate.Value.CompareTo(DateTime.Now) == -1);
             }
-            return;
+            return classes;
         }
         private void Average()
         {
