@@ -217,6 +217,10 @@ namespace ClassSurvey1.Models
                 entity.ToTable("VersionSurvey");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             });
         }
     }

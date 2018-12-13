@@ -13,6 +13,8 @@ namespace ClassSurvey1.Models
         public Guid Id { get; set; }
         public int? Version { get; set; }
         public string Content { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
 
         public ICollection<Class> Classes { get; set; }
     }

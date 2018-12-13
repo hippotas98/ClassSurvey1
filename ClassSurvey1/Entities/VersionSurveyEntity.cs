@@ -14,6 +14,8 @@ namespace ClassSurvey1.Entities
         public int? Version { get; set; }
         public string Content { get; set; }
         public Dictionary<string, string> ContentCategory { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
         public ICollection<FormEntity> Forms { get; set; }
         public VersionSurveyEntity() : base()
         {
@@ -36,6 +38,7 @@ namespace ClassSurvey1.Entities
     {
         public Guid Id { get; set; }
         public int? Version { get; set; }
+        public string Year { get; set; }
     }
     
 }

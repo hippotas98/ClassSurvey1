@@ -69,7 +69,7 @@ namespace ClassSurvey1.Modules.MClasses
             Class Class = context.Classes.Include(c => c.StudentClasses).Include(s => s.VersionSurvey).FirstOrDefault(c => c.Id == ClassId);
             if (Class == null) throw new NotFoundException("Class Not Found");
             if (//Class.OpenedDate != null && Class.ClosedDate != null && 
-                //DateTime.UtcNow > Class.OpenedDate  && DateTime.UtcNow > Class.ClosedDate &&
+                //DateTime.Now > Class.OpenedDate  && DateTime.Now > Class.ClosedDate &&
                 string.IsNullOrEmpty(Class.M))
             {
                 Average();

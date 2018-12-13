@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ClassSurvey1.Entities;
 using ClassSurvey1.Models;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 
 namespace ClassSurvey1.Modules.MVersionSurveys
 {
@@ -45,15 +46,19 @@ namespace ClassSurvey1.Modules.MVersionSurveys
             VersionSurvey VersionSurvey = context.VersionSurveys.FirstOrDefault(c => c.Id == VersionSurveyId); //add include later
             if (VersionSurvey == null) throw new NotFoundException("VersionSurvey Not Found");
             VersionSurvey updateVersionSurvey = new VersionSurvey(VersionSurveyEntity);
+            DateTime? createdDate = VersionSurvey.CreatedDate;
             updateVersionSurvey.CopyTo(VersionSurvey);
+            VersionSurvey.ModifiedDate = DateTime.Now;
+            VersionSurvey.CreatedDate = createdDate;
             context.SaveChanges();
-            return VersionSurveyEntity;
+            return new VersionSurveyEntity(VersionSurvey);
         }
 
         public VersionSurveyEntity Create(UserEntity userEntity, VersionSurveyEntity versionSurveyEntity)
         {
             VersionSurvey versionSurvey = new VersionSurvey(versionSurveyEntity);
             versionSurvey.Id = Guid.NewGuid();
+            versionSurvey.CreatedDate = DateTime.Now;
             context.VersionSurveys.Add(versionSurvey);
             context.SaveChanges();
             return new VersionSurveyEntity(versionSurvey);
@@ -71,6 +76,10 @@ namespace ClassSurvey1.Modules.MVersionSurveys
             if (VersionSurveySearchEntity.Version != null)
             {
                 VersionSurveys = VersionSurveys.Where(vs => vs.Version.Equals(VersionSurveySearchEntity.Version));
+            }
+            if (VersionSurveySearchEntity.Year != null )
+            {
+                VersionSurveys = VersionSurveys.Where(vs => vs.CreatedDate.Value.Year.ToString().Equals(VersionSurveySearchEntity.Year));
             }
             return VersionSurveys;
         }
