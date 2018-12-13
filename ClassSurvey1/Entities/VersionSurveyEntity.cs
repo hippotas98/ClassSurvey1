@@ -11,7 +11,7 @@ namespace ClassSurvey1.Entities
     public partial class VersionSurveyEntity : BaseEntity
     {
         public Guid Id { get; set; }
-        public int? Version { get; set; }
+        public int Version { get; set; }
         public string Content { get; set; }
         public Dictionary<string, string> ContentCategory { get; set; }
         public DateTime? CreatedDate { get; set; }
@@ -37,7 +37,7 @@ namespace ClassSurvey1.Entities
     public partial class VersionSurveySearchEntity : FilterEntity
     {
         public Guid Id { get; set; }
-        public int? Version { get; set; }
+        public int Version { get; set; }
         public string Year { get; set; }
     }
     

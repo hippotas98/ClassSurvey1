@@ -43,6 +43,10 @@ namespace ClassSurvey1.Modules.MVersionSurveys
         }
         public VersionSurveyEntity Update(UserEntity userEntity, Guid VersionSurveyId, VersionSurveyEntity VersionSurveyEntity)
         {
+            if(VersionSurveyEntity.Content.Equals(String.Empty) 
+               || VersionSurveyEntity.Content == null
+               || VersionSurveyEntity.Version == null)
+                throw new BadRequestException("Field khong duoc trong");
             VersionSurvey VersionSurvey = context.VersionSurveys.FirstOrDefault(c => c.Id == VersionSurveyId); //add include later
             if (VersionSurvey == null) throw new NotFoundException("VersionSurvey Not Found");
             VersionSurvey updateVersionSurvey = new VersionSurvey(VersionSurveyEntity);
@@ -56,6 +60,10 @@ namespace ClassSurvey1.Modules.MVersionSurveys
 
         public VersionSurveyEntity Create(UserEntity userEntity, VersionSurveyEntity versionSurveyEntity)
         {
+            if(versionSurveyEntity.Content.Equals(String.Empty) 
+               || versionSurveyEntity.Content == null 
+               || versionSurveyEntity.Version == null)
+                throw new BadRequestException("Field khong duoc trong");
             VersionSurvey versionSurvey = new VersionSurvey(versionSurveyEntity);
             versionSurvey.Id = Guid.NewGuid();
             versionSurvey.CreatedDate = DateTime.Now;
