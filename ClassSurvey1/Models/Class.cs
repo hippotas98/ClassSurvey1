@@ -24,6 +24,7 @@ namespace ClassSurvey1.Models
         public DateTime? OpenedDate { get; set; }
         public DateTime? ClosedDate { get; set; }
         public Guid? VersionSurveyId { get; set; }
+        public string Semester { get; set; }
 
         public Lecturer Lecturer { get; set; }
         public VersionSurvey VersionSurvey { get; set; }

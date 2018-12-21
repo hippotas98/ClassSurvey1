@@ -26,6 +26,7 @@ namespace ClassSurvey1.Entities
         public LecturerEntity Lecturer { get; set; }
         public ICollection<StudentClassEntity> StudentClasses { get; set; }
         public VersionSurveyEntity VersionSurveyEntity { get; set; }
+        public string Semester { get; set; }
         public ClassEntity() : base() { }
         public ClassEntity(Class Class, params object[] args) : base(Class)
         {
@@ -55,5 +56,6 @@ namespace ClassSurvey1.Entities
         public Guid VersionId { get; set; }
         public DateTime? OpenedDate { get; set; }
         public DateTime? ClosedDate { get; set; }
+        public string Semester { get; set; }
     }
 }

@@ -71,17 +71,18 @@ namespace ClassSurvey1.Modules.MClasses
         {
             Class Class = context.Classes.Include(c=>c.Lecturer).Include(c => c.StudentClasses).ThenInclude(sc=>sc.Student).Include(s => s.VersionSurvey).FirstOrDefault(c => c.Id == ClassId);
             if (Class == null) throw new NotFoundException("Class Not Found");
+            List<Class> classes = context.Classes.Where(c=>c.Semester == Class.Semester).ToList();
             if (//Class.OpenedDate != null && Class.ClosedDate != null && 
                 //DateTime.Now > Class.OpenedDate  && DateTime.Now > Class.ClosedDate &&
                 //string.IsNullOrEmpty(Class.M)
                 true)
             {
-                Average();
-                Average1();
-                Average2();
-                StandardDeviation();
-                StandardDeviation1();       
-                StandardDeviation2();
+                Average(classes);
+                Average1(classes);
+                Average2(classes);
+                StandardDeviation(classes);
+                StandardDeviation1(classes);       
+                StandardDeviation2(classes);
             }
             return new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses, Class.Lecturer);
         }
@@ -227,6 +228,10 @@ namespace ClassSurvey1.Modules.MClasses
                     c.Subject.Contains(classSearchEntity.Subject) || classSearchEntity.Subject.Contains(c.Subject));
             }
 
+            if (classSearchEntity.Semester != null)
+            {
+                classes = classes.Where(c => c.Semester.Equals(classSearchEntity.Semester));
+            }
             if (classSearchEntity.OpenedDate.HasValue && classSearchEntity.OpenedDate.Value!= DateTime.MinValue)
             {
                 classes = classes.Where(c => c.OpenedDate.Value.CompareTo(DateTime.Now) == -1);
@@ -237,9 +242,9 @@ namespace ClassSurvey1.Modules.MClasses
             }
             return classes;
         }
-        private void Average()
+        private void Average(List<Class> classes)
         {
-            List<Class> classes = context.Classes.ToList();
+             
             //List<Dictionary<string, float>> averages = new List<Dictionary<string, float>>();
             foreach(var Class in classes)
             {  
@@ -282,9 +287,9 @@ namespace ClassSurvey1.Modules.MClasses
             //return averages;
             context.SaveChanges();
         }
-        private void StandardDeviation()
+        private void StandardDeviation(List<Class> classes)
         {
-            List<Class> classes = context.Classes.ToList();
+            //List<Class> classes = context.Classes.ToList();
             //List<Dictionary<string, double>> deviations = new List<Dictionary<string, double>>();
             foreach (var Class in classes)
             {
@@ -332,9 +337,9 @@ namespace ClassSurvey1.Modules.MClasses
             context.SaveChanges();
             //return deviations;
         }
-        private void Average1()
+        private void Average1(List<Class> classes)
         {
-            List<Class> classes = context.Classes.ToList();
+            //List<Class> classes = context.Classes.ToList();
             foreach (var Class in classes)
             {
                 string subject = Class.Subject;
@@ -369,9 +374,9 @@ namespace ClassSurvey1.Modules.MClasses
             }
             context.SaveChanges();
         }
-        private void StandardDeviation1()
+        private void StandardDeviation1(List<Class> classes)
         {
-            List<Class> classes = context.Classes.ToList();
+            //List<Class> classes = context.Classes.ToList();
             
             foreach (var Class in classes)
             {
@@ -411,9 +416,9 @@ namespace ClassSurvey1.Modules.MClasses
             }
             context.SaveChanges();
         }
-        private void Average2()
+        private void Average2(List<Class> classes)
         {
-            List<Class> classes = context.Classes.ToList();
+            //List<Class> classes = context.Classes.ToList();
             foreach (var Class in classes)
             {
                 if (!string.IsNullOrEmpty(Class.M))
@@ -448,9 +453,9 @@ namespace ClassSurvey1.Modules.MClasses
             }
             context.SaveChanges();
         }
-        private void StandardDeviation2()
+        private void StandardDeviation2(List<Class> classes)
         {
-            List<Class> classes = context.Classes.ToList();
+            //List<Class> classes = context.Classes.ToList();
             foreach (var Class in classes)
             {
                 if (!String.IsNullOrEmpty(Class.Std))
