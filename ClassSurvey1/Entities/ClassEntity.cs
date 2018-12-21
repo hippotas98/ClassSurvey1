@@ -21,8 +21,8 @@ namespace ClassSurvey1.Entities
         public string Std { get; set; }
         public string Std1 { get; set; }
         public string Std2 { get; set; }
-        public DateTime openedDate { get; set; }
-        public DateTime closedDate { get; set; }
+        public DateTime? OpenedDate { get; set; }
+        public DateTime? ClosedDate { get; set; }
         public LecturerEntity Lecturer { get; set; }
         public ICollection<StudentClassEntity> StudentClasses { get; set; }
         public VersionSurveyEntity VersionSurveyEntity { get; set; }
@@ -37,7 +37,7 @@ namespace ClassSurvey1.Entities
                 }
                 else if (arg is ICollection<StudentClass> students)
                 {
-                    this.StudentClasses = students.Select(sc => new StudentClassEntity(sc)).ToList();
+                    this.StudentClasses = students.Select(sc => new StudentClassEntity(sc,sc.Forms,sc.Student)).ToList();
                 }
                 else if (arg is VersionSurvey versionSurvey)
                 {
@@ -53,7 +53,7 @@ namespace ClassSurvey1.Entities
         public Guid LecturerId { get; set; }
         public string Subject { get; set; }
         public Guid VersionId { get; set; }
-        public DateTime openedDate { get; set; }
-        public DateTime closedDate { get; set; }
+        public DateTime? OpenedDate { get; set; }
+        public DateTime? ClosedDate { get; set; }
     }
 }

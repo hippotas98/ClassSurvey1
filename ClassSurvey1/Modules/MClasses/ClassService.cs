@@ -57,16 +57,19 @@ namespace ClassSurvey1.Modules.MClasses
         public List<ClassEntity> List(UserEntity userEntity, ClassSearchEntity classSearchEntity)
         {
             if (classSearchEntity == null) classSearchEntity = new ClassSearchEntity();
-            IQueryable<Class> classes = context.Classes.Include(s=>s.StudentClasses).Include(s => s.VersionSurvey);
+            IQueryable<Class> classes = context.Classes.Include(s => s.StudentClasses).ThenInclude(sc => sc.Student)
+                .Include(s => s.VersionSurvey).Include(c => c.Lecturer);
+            
             classes = Apply(classes, classSearchEntity);
+            
             //classes = classSearchEntity.SkipAndTake(classes);
-            return classes.Select(c => new ClassEntity(c,c.VersionSurvey,c.StudentClasses)).ToList();
+            return classes.Select(c => new ClassEntity(c,c.VersionSurvey,c.StudentClasses,c.Lecturer)).ToList();
         }
 
        
         public ClassEntity Get(UserEntity userEntity, Guid ClassId)
         {
-            Class Class = context.Classes.Include(c => c.StudentClasses).Include(s => s.VersionSurvey).FirstOrDefault(c => c.Id == ClassId);
+            Class Class = context.Classes.Include(c=>c.Lecturer).Include(c => c.StudentClasses).ThenInclude(sc=>sc.Student).Include(s => s.VersionSurvey).FirstOrDefault(c => c.Id == ClassId);
             if (Class == null) throw new NotFoundException("Class Not Found");
             if (//Class.OpenedDate != null && Class.ClosedDate != null && 
                 //DateTime.Now > Class.OpenedDate  && DateTime.Now > Class.ClosedDate &&
@@ -79,7 +82,7 @@ namespace ClassSurvey1.Modules.MClasses
                 Average2();
                 StandardDeviation2();
             }
-            return new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses);
+            return new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses, Class.Lecturer);
         }
 
         public ClassEntity Update(UserEntity userEntity, Guid ClassId, ClassEntity classEntity)
@@ -223,11 +226,11 @@ namespace ClassSurvey1.Modules.MClasses
                     c.Subject.Contains(classSearchEntity.Subject) || classSearchEntity.Subject.Contains(c.Subject));
             }
 
-            if (classSearchEntity.openedDate != DateTime.MinValue)
+            if (classSearchEntity.OpenedDate.HasValue && classSearchEntity.OpenedDate.Value!= DateTime.MinValue)
             {
                 classes = classes.Where(c => c.OpenedDate.Value.CompareTo(DateTime.Now) == -1);
             }
-            if (classSearchEntity.closedDate != DateTime.MinValue)
+            if (classSearchEntity.ClosedDate.HasValue && classSearchEntity.ClosedDate.Value != DateTime.MinValue)
             {
                 classes = classes.Where(c => c.ClosedDate.Value.CompareTo(DateTime.Now) == -1);
             }

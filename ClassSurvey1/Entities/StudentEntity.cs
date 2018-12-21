@@ -32,7 +32,7 @@ namespace ClassSurvey1.Entities
             {
                 if(arg is ICollection<StudentClass> studentClasses)
                 {
-                    this.StudentClasses = studentClasses.Select(s => new StudentClassEntity(s)).ToList();
+                    this.StudentClasses = studentClasses.Select(s => new StudentClassEntity(s,s.Class,s.Forms)).ToList();
                 }
 
 //                if (arg is User User)

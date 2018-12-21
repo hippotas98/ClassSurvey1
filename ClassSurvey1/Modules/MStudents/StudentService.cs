@@ -62,9 +62,9 @@ namespace ClassSurvey1.Modules.MStudents
             List<ClassEntity> result = new List<ClassEntity>();
             foreach (var sc in studentClasses)
             {
-                var Class = context.Classes.Include(c => c.VersionSurvey).Include(c => c.StudentClasses).ThenInclude(s=>s.Forms)
+                var Class = context.Classes.Include(c => c.VersionSurvey).Include(c=>c.Lecturer).Include(c => c.StudentClasses).ThenInclude(s=>s.Forms)
                     .FirstOrDefault(c => c.Id == sc.ClassId);
-                result.Add(new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses));
+                result.Add(new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses, Class.Lecturer));
             }
 
             return result;
@@ -72,7 +72,7 @@ namespace ClassSurvey1.Modules.MStudents
         
         public StudentEntity Get(UserEntity userEntity, Guid StudentId)
         {
-            Student Student = context.Students.Include(s=>s.StudentClasses).FirstOrDefault(c => c.Id == StudentId); ///add include later
+            Student Student = context.Students.Include(s=>s.StudentClasses).ThenInclude(sc=>sc.Forms).FirstOrDefault(c => c.Id == StudentId); ///add include later
             //User User = context.Users.FirstOrDefault(u => u.Id == StudentId);
             if (Student == null) throw new NotFoundException("Student Not Found");
             return new StudentEntity(Student,Student.StudentClasses);

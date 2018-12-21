@@ -15,7 +15,7 @@ namespace ClassForm1.Entities
         public Guid StudentClassId { get; set; }
         public string Content { get; set; }
         
-        public Dictionary<string, int> ContentValues { get; set; }
+        public Dictionary<string,string> ContentValues { get; set; }
         public StudentClassEntity StudentClass { get; set; }
         
         public FormEntity() : base()
@@ -25,7 +25,7 @@ namespace ClassForm1.Entities
         public FormEntity(Form Form, params object[] args) : base(Form)
         {
             if(this.Content != null || this.Content != "")
-                this.ContentValues = JsonConvert.DeserializeObject<Dictionary<string, int> >(this.Content);
+                this.ContentValues = JsonConvert.DeserializeObject<Dictionary<string, string> >(this.Content);
             foreach(var arg in args)
             {
                 if(arg is StudentClass studentClass)

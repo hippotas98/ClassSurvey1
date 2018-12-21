@@ -17,13 +17,13 @@ namespace ClassSurvey1.Modules.MSurveys
     {
         public void CreateOrUpdate(UserEntity userEntity, SurveyEntity SurveyEntity)
         {
-            foreach(var Id in SurveyEntity.classGuids)
+            foreach(var Id in SurveyEntity.ClassGuids)
             {
                 Class Class = context.Classes.FirstOrDefault(c => c.Id == Id);
-                Class.OpenedDate = SurveyEntity.openedDate;
-                Class.ClosedDate = SurveyEntity.closedDate;
+                Class.OpenedDate = DateTime.Parse(SurveyEntity.OpenedDate.ToString());
+                Class.ClosedDate = DateTime.Parse(SurveyEntity.ClosedDate.ToString());
                 //var StudentClasses = context.StudentClasses.Where(sc => sc.ClassId == Id).ToList();
-                Class.VersionSurveyId = SurveyEntity.versionSurveyId;
+                Class.VersionSurveyId = SurveyEntity.VersionSurveyId;
                 
             }
             context.SaveChanges();
