@@ -73,13 +73,14 @@ namespace ClassSurvey1.Modules.MClasses
             if (Class == null) throw new NotFoundException("Class Not Found");
             if (//Class.OpenedDate != null && Class.ClosedDate != null && 
                 //DateTime.Now > Class.OpenedDate  && DateTime.Now > Class.ClosedDate &&
-                string.IsNullOrEmpty(Class.M))
+                //string.IsNullOrEmpty(Class.M)
+                true)
             {
                 Average();
-                StandardDeviation();
                 Average1();
-                StandardDeviation1();
                 Average2();
+                StandardDeviation();
+                StandardDeviation1();       
                 StandardDeviation2();
             }
             return new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses, Class.Lecturer);
@@ -313,6 +314,7 @@ namespace ClassSurvey1.Modules.MClasses
                             List<int> values = surveyResults.Select(sr => Convert.ToInt32(sr[key])).ToList();
                             float sum = 0;
                             values.ForEach(v => sum += v);
+                            
                             float average = sum / values.Count();
                             double variance = 0;
                             values.ForEach(v => variance += Math.Pow((v-average),2));
@@ -354,6 +356,7 @@ namespace ClassSurvey1.Modules.MClasses
                             }
                             
                         }
+                        //Console.WriteLine("m1: " + values.Count());
                         double sum = 0;
                         values.ForEach(v => sum += v);
                         double M1 = sum / values.Count();
@@ -393,10 +396,12 @@ namespace ClassSurvey1.Modules.MClasses
                         }
                         double sum = 0;
                         values.ForEach(v => sum += v);
+                        
                         double M1 = sum / values.Count();
                         double variance = 0;
                         values.ForEach(v => variance += Math.Pow((v - M1), 2));
                         double Std1 = Math.Sqrt(variance);
+                        //Console.WriteLine("std1:" + values.Count() + variance + " " + M1);
                         Std1s.Add(key, Std1);
                     }
                     Class.Std1 = JsonConvert.SerializeObject(Std1s);
@@ -430,9 +435,12 @@ namespace ClassSurvey1.Modules.MClasses
                             }
                             
                         }
+                        
+
                         double sum = 0;
                         values.ForEach(v => sum += v);
                         double M2 = sum / values.Count();
+                        //Console.WriteLine("m2: "+values.Count() + M2 + " " + sum);
                         M2s.Add(key, M2);
                     }
                     Class.M2 = JsonConvert.SerializeObject(M2s);
@@ -464,15 +472,18 @@ namespace ClassSurvey1.Modules.MClasses
                             }
                             
                         }
+                        
+
                         double sum = 0;
                         values.ForEach(v => sum += v);
                         double M2 = sum / values.Count();
                         double variance = 0;
                         values.ForEach(v => variance += Math.Pow((v - M2), 2));
                         double Std2 = Math.Sqrt(variance);
+                        //Console.WriteLine("std2:" + values.Count() + variance + " " + M2);
                         Std2s.Add(key, Std2);
                     }
-                    Class.M2 = JsonConvert.SerializeObject(Std2s);
+                    Class.Std2 = JsonConvert.SerializeObject(Std2s);
                 }
                 
                 
