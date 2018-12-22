@@ -81,11 +81,11 @@ namespace ClassSurvey1.Modules.MVersionSurveys
         }
         private IQueryable<VersionSurvey> Apply(IQueryable<VersionSurvey> VersionSurveys, VersionSurveySearchEntity VersionSurveySearchEntity)
         {
-            if (VersionSurveySearchEntity.Version != null)
+            if (VersionSurveySearchEntity.Version.HasValue)
             {
-                VersionSurveys = VersionSurveys.Where(vs => vs.Version.Equals(VersionSurveySearchEntity.Version));
+                VersionSurveys = VersionSurveys.Where(vs => vs.Version.Equals(VersionSurveySearchEntity.Version.Value));
             }
-            if (VersionSurveySearchEntity.Year != null )
+            if (VersionSurveySearchEntity.Year != null)
             {
                 VersionSurveys = VersionSurveys.Where(vs => vs.CreatedDate.Value.Year.ToString().Equals(VersionSurveySearchEntity.Year));
             }
