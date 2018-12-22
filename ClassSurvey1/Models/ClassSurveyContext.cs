@@ -71,27 +71,15 @@ namespace ClassSurvey1.Models
 
                 entity.Property(e => e.ClosedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.M).IsUnicode(false);
-
-                entity.Property(e => e.M1).IsUnicode(false);
-
-                entity.Property(e => e.M2).IsUnicode(false);
-
                 entity.Property(e => e.OpenedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Semester).IsUnicode(false);
 
-                entity.Property(e => e.Std)
-                    .HasColumnName("STD")
-                    .IsUnicode(false);
+                entity.Property(e => e.Std).HasColumnName("STD");
 
-                entity.Property(e => e.Std1)
-                    .HasColumnName("STD1")
-                    .IsUnicode(false);
+                entity.Property(e => e.Std1).HasColumnName("STD1");
 
-                entity.Property(e => e.Std2)
-                    .HasColumnName("STD2")
-                    .IsUnicode(false);
+                entity.Property(e => e.Std2).HasColumnName("STD2");
 
                 entity.Property(e => e.Subject).HasMaxLength(255);
 

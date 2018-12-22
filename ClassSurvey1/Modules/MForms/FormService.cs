@@ -55,7 +55,7 @@ namespace ClassSurvey1.Modules.MForms
                 context.SaveChanges();
                 return new FormEntity(Form);
             }
-            else throw new BadRequestException("Cannot update");
+            throw new BadRequestException("Cannot update");
             
         }
 

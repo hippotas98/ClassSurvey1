@@ -61,8 +61,9 @@ namespace ClassSurvey1.Modules.MClasses
                 .Include(s => s.VersionSurvey).Include(c => c.Lecturer);
             
             classes = Apply(classes, classSearchEntity);
-            
+            //List<Class> list = classes.ToList();
             //classes = classSearchEntity.SkipAndTake(classes);
+            
             return classes.Select(c => new ClassEntity(c,c.VersionSurvey,c.StudentClasses,c.Lecturer)).ToList();
         }
 
@@ -77,12 +78,12 @@ namespace ClassSurvey1.Modules.MClasses
                 //string.IsNullOrEmpty(Class.M)
                 true)
             {
-                Average(classes);
-                Average1(classes);
-                Average2(classes);
-                StandardDeviation(classes);
-                StandardDeviation1(classes);       
-                StandardDeviation2(classes);
+                Average(Class.Semester);
+                Average1(Class.Semester);
+                Average2(Class.Semester);
+                StandardDeviation(Class.Semester);
+                StandardDeviation1(Class.Semester);       
+                StandardDeviation2(Class.Semester);
             }
             return new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses, Class.Lecturer);
         }
@@ -242,9 +243,9 @@ namespace ClassSurvey1.Modules.MClasses
             }
             return classes;
         }
-        private void Average(List<Class> classes)
+        private void Average(string Semester)
         {
-             
+            List<Class> classes = context.Classes.Where(c=>c.Semester == Semester).ToList();
             //List<Dictionary<string, float>> averages = new List<Dictionary<string, float>>();
             foreach(var Class in classes)
             {  
@@ -287,8 +288,9 @@ namespace ClassSurvey1.Modules.MClasses
             //return averages;
             context.SaveChanges();
         }
-        private void StandardDeviation(List<Class> classes)
+        private void StandardDeviation(string Semester)
         {
+            List<Class> classes = context.Classes.Where(c=>c.Semester == Semester).ToList();
             //List<Class> classes = context.Classes.ToList();
             //List<Dictionary<string, double>> deviations = new List<Dictionary<string, double>>();
             foreach (var Class in classes)
@@ -338,8 +340,10 @@ namespace ClassSurvey1.Modules.MClasses
             context.SaveChanges();
             //return deviations;
         }
-        private void Average1(List<Class> classes)
+        private void Average1(string Semester)
         {
+            List<Class> classes = context.Classes.Where(c=>c.Semester == Semester).ToList();
+
             //List<Class> classes = context.Classes.ToList();
             foreach (var Class in classes)
             {
@@ -376,10 +380,10 @@ namespace ClassSurvey1.Modules.MClasses
             }
             context.SaveChanges();
         }
-        private void StandardDeviation1(List<Class> classes)
+        private void StandardDeviation1(string Semester)
         {
-            //List<Class> classes = context.Classes.ToList();
-            
+            List<Class> classes = context.Classes.Where(c=>c.Semester == Semester).ToList();
+
             foreach (var Class in classes)
             {
                 if(!String.IsNullOrEmpty(Class.Std))
@@ -419,9 +423,9 @@ namespace ClassSurvey1.Modules.MClasses
             }
             context.SaveChanges();
         }
-        private void Average2(List<Class> classes)
+        private void Average2(string Semester)
         {
-            //List<Class> classes = context.Classes.ToList();
+            List<Class> classes = context.Classes.Where(c=>c.Semester == Semester).ToList();
             foreach (var Class in classes)
             {
                 if (!string.IsNullOrEmpty(Class.M))
@@ -456,9 +460,9 @@ namespace ClassSurvey1.Modules.MClasses
             }
             context.SaveChanges();
         }
-        private void StandardDeviation2(List<Class> classes)
+        private void StandardDeviation2(string Semester)
         {
-            //List<Class> classes = context.Classes.ToList();
+            List<Class> classes = context.Classes.Where(c=>c.Semester == Semester).ToList();
             foreach (var Class in classes)
             {
                 if (!String.IsNullOrEmpty(Class.Std))
