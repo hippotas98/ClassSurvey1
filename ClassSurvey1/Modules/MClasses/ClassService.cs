@@ -317,6 +317,7 @@ namespace ClassSurvey1.Modules.MClasses
                         foreach (var key in keys)
                         {
                             List<int> values = surveyResults.Select(sr => Convert.ToInt32(sr[key])).ToList();
+                            if (values.Count == 0) return;
                             float sum = 0;
                             values.ForEach(v => sum += v);
                             
@@ -363,6 +364,7 @@ namespace ClassSurvey1.Modules.MClasses
                         }
                         //Console.WriteLine("m1: " + values.Count());
                         double sum = 0;
+                        if (values.Count == 0) return;
                         values.ForEach(v => sum += v);
                         double M1 = sum / values.Count();
                         M1s.Add(key, M1);
@@ -400,6 +402,7 @@ namespace ClassSurvey1.Modules.MClasses
                             
                         }
                         double sum = 0;
+                        if (values.Count == 0) return;
                         values.ForEach(v => sum += v);
                         
                         double M1 = sum / values.Count();
@@ -441,7 +444,7 @@ namespace ClassSurvey1.Modules.MClasses
                             
                         }
                         
-
+                        if (values.Count == 0) return;
                         double sum = 0;
                         values.ForEach(v => sum += v);
                         double M2 = sum / values.Count();
@@ -478,7 +481,7 @@ namespace ClassSurvey1.Modules.MClasses
                             
                         }
                         
-
+                        if (values.Count == 0) return;
                         double sum = 0;
                         values.ForEach(v => sum += v);
                         double M2 = sum / values.Count();
