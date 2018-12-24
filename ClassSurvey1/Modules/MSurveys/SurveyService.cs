@@ -25,6 +25,7 @@ namespace ClassSurvey1.Modules.MSurveys
                 Class.ClosedDate = DateTime.Parse(SurveyEntity.ClosedDate.ToString());
                 Class.Semester = GetSemester(Class.OpenedDate.Value);
                 //var StudentClasses = context.StudentClasses.Where(sc => sc.ClassId == Id).ToList();
+                
                 Class.VersionSurveyId = SurveyEntity.VersionSurveyId;
                 
             }

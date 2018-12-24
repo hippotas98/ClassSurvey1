@@ -7,7 +7,7 @@ using ClassSurvey1;
 using ClassSurvey1.Entities;
 using ClassSurvey1.Models;
 
-namespace ClassForm1.Entities
+namespace ClassSurvey1.Entities
 {
     public partial class FormEntity : BaseEntity
     {
