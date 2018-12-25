@@ -133,7 +133,7 @@ namespace ClassSurvey1.Modules.MClasses
 
             context.SaveChanges();
 
-            return new ClassEntity(Class);
+            return new ClassEntity(Class, Class.StudentClasses);
         }
 
         public bool Delete(UserEntity userEntity, Guid ClassId)
