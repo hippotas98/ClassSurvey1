@@ -62,6 +62,8 @@ namespace ClassSurvey1.Modules.MForms
         {
             if (FormValidator(FormEntity))
             {
+                Form form = context.Forms.Where(f => f.StudentClassId == FormEntity.StudentClassId).FirstOrDefault();
+                if(form == null) throw new BadRequestException("Cannot create form"); 
                 Form Form = new Form(FormEntity);
                 Form.Id = Guid.NewGuid();
                 context.Forms.Add(Form);
@@ -100,11 +102,12 @@ namespace ClassSurvey1.Modules.MForms
         }
         private bool FormValidator(FormEntity FormEntity)
         {
-
+        
             StudentClass studentClass = context.StudentClasses.Where(sc => sc.Id == FormEntity.StudentClassId).FirstOrDefault();
             if (studentClass == null) return false;
             Class Class = context.Classes.Where(c => c.Id == studentClass.ClassId).FirstOrDefault();
             if (Class == null) return false;
+            
             if (DateTime.Now >= Class.OpenedDate && DateTime.Now <= Class.ClosedDate)
                 return true;
             return false;
