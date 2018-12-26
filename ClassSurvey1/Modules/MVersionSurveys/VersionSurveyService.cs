@@ -120,7 +120,7 @@ namespace ClassSurvey1.Modules.MVersionSurveys
             {
                 try
                 {
-                    if (Class.OpenedDate != null && DateTime.Compare(DateTime.Now, Class.ClosedDate.Value) < 0)
+                    if (Class.OpenedDate != null && DateTime.Now >= Class.OpenedDate.Value)
                         return false;
                 }
                 catch (Exception ex)

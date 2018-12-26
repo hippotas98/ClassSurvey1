@@ -14,6 +14,8 @@ namespace ClassSurvey1.Modules.MSurveys
     {
         public void CreateOrUpdate(UserEntity userEntity, SurveyEntity SurveyEntity)
         {
+            if(!SurveyValidator(SurveyEntity)) 
+                throw new BadRequestException("Cannot create or update surveys");
             foreach(var Id in SurveyEntity.ClassGuids)
             {
                 Class Class = context.Classes.FirstOrDefault(c => c.Id == Id);
@@ -51,6 +53,16 @@ namespace ClassSurvey1.Modules.MSurveys
             {
                 return "Ki he " + (year-1) + "-" + (year);
             }
+        }
+
+        private bool SurveyValidator(SurveyEntity surveyEntity)
+        {
+            if (surveyEntity.OpenedDate == DateTime.MinValue) return false;
+            if (surveyEntity.ClosedDate == DateTime.MinValue) return false;
+            if (surveyEntity.OpenedDate > surveyEntity.ClosedDate) return false;
+            if (surveyEntity.VersionSurveyId == Guid.Empty) return false;          
+            if (surveyEntity.ClassGuids.Count == 0) return false;
+            return true;
         }
     }
 }
