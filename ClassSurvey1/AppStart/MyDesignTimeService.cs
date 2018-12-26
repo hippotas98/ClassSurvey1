@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
 namespace ClassSurvey1
 {

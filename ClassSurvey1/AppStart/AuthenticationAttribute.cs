@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Security.Cryptography;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -14,6 +11,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using ClassSurvey1.Models;
 using ClassSurvey1.Modules;
+
 namespace ClassSurvey1
 {
     public class AuthenticationFilter : IActionFilter
@@ -22,6 +20,7 @@ namespace ClassSurvey1
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
         public TokenValidationParameters Parameters { get; private set; }
         private IJWTHandler JWTHandler;
+
         public AuthenticationFilter(IConfiguration Configuration, IJWTHandler JWTHandler)
         {
             this.Configuration = Configuration;
@@ -31,16 +30,16 @@ namespace ClassSurvey1
         //uy quyen
         public void OnActionExecuting(ActionExecutingContext FilterContext)
         {
-            return;
-            if (FilterContext.HttpContext.Request.Path.Value.StartsWith("/App/Login"))
+            if (FilterContext.HttpContext.Request.Path.Value.StartsWith("/api/Users/Login"))
                 return;
             var Token = FilterContext.HttpContext.Request.Cookies["JWT"];
             var JWTEntity = JWTHandler.Decode(Token);
             if (JWTEntity != null)
             {
-
                 FilterContext.HttpContext.User = new MyPrincipal(JWTEntity.UserEntity);
-                string Path = FilterContext.HttpContext.Request.Path.HasValue ? FilterContext.HttpContext.Request.Path.Value : "";
+                string Path = FilterContext.HttpContext.Request.Path.HasValue
+                    ? FilterContext.HttpContext.Request.Path.Value
+                    : "";
                 string Method = FilterContext.HttpContext.Request.Method;
                 string[] temp = Path.Split('/');
                 for (int i = 0; i < temp.Length; i++)
@@ -49,27 +48,30 @@ namespace ClassSurvey1
                     bool isGuid = Guid.TryParse(temp[i], out id);
                     if (isGuid) temp[i] = "*";
                 }
+
                 Path = string.Join("/", temp);
                 ClassSurveyContext Context = new ClassSurveyContext();
-                Operation Operation = Context.Operations.Where(o => o.Link.Equals(Path) && o.Method.Equals(Method)).FirstOrDefault();
-
+                Console.WriteLine("Filter " + Path + " " + Method);
+                Operation Operation = Context.Operations
+                    .FirstOrDefault(o => o.Link.Equals(Path) && o.Method.Equals(Method));
+                if (Operation == null) return;
+                Console.WriteLine(Operation.Link);
                 string role = string.Join(",", JWTEntity.UserEntity.Roles);
-                ROLES roles = (ROLES)Enum.Parse(typeof(ROLES), role);
-                var operationRole = (ROLES)Enum.Parse(typeof(ROLES), Operation.Role.ToString());
+                ROLES roles = (ROLES) Enum.Parse(typeof(ROLES), role);
+                Console.WriteLine(roles);
+                var operationRole = (ROLES) Enum.Parse(typeof(ROLES), Operation.Role.ToString());
                 if (Operation != null && operationRole != ROLES.NONE)
                 {
                     if ((operationRole & roles) == 0)
                         throw new ForbiddenException("Bạn không có quyền truy cập");
                 }
+
                 return;
             }
-            else
-            {
-                if (FilterContext.HttpContext.Request.Path.Value.StartsWith("api"))
-                    throw new ForbiddenException("Cookie không hợp lệ");
-                throw new ForbiddenException("Login First");
-                
-            }
+
+            if (FilterContext.HttpContext.Request.Path.Value.StartsWith("api"))
+                throw new ForbiddenException("Cookie không hợp lệ");
+            throw new ForbiddenException("Login First");
         }
 
         public void OnActionExecuted(ActionExecutedContext Context)
@@ -85,6 +87,7 @@ namespace ClassSurvey1
         public string iss { get; set; }
         public string iat { get; set; }
         public string exp { get; set; }
+
         public DateTime ExpTime
         {
             get
@@ -97,7 +100,6 @@ namespace ClassSurvey1
 
         public JWTEntity()
         {
-
         }
     }
 
@@ -117,6 +119,7 @@ namespace ClassSurvey1
         private JwtHeader _jwtHeader;
         private RSA RSA;
         public TokenValidationParameters Parameters { get; private set; }
+
         public JWTHandler()
         {
             InitializeRsa();
@@ -167,6 +170,7 @@ namespace ClassSurvey1
 
             return Convert.FromBase64String(decrypted);
         }
+
         public static string ToBase64(string arg)
         {
             if (arg == null)
@@ -175,12 +179,13 @@ namespace ClassSurvey1
             }
 
             var s = arg
-                    .PadRight(arg.Length + (4 - arg.Length % 4) % 4, '=')
-                    .Replace("_", "/")
-                    .Replace("-", "+");
+                .PadRight(arg.Length + (4 - arg.Length % 4) % 4, '=')
+                .Replace("_", "/")
+                .Replace("-", "+");
 
             return s;
         }
+
         public JWTEntity Decode(string token, bool verify = true)
         {
             try
@@ -208,9 +213,11 @@ namespace ClassSurvey1
                         {
                             throw new BadRequestException("JWT hết hạn sử dụng!");
                         }
+
                         return JWTEntity;
                     }
                 }
+
                 return JWTEntity;
             }
             catch (Exception e)
@@ -218,16 +225,16 @@ namespace ClassSurvey1
                 Console.WriteLine(e.StackTrace);
                 return null;
             }
-
         }
+
         public string CreateToken(UserEntity UserEntity)
         {
             if (_signingCredentials == null) throw new BadRequestException("Server khong tao duoc token");
             var nowUtc = DateTime.UtcNow;
             var expires = nowUtc.AddDays(30);
             var centuryBegin = new DateTime(1970, 1, 1);
-            var exp = (long)(new TimeSpan(expires.Ticks - centuryBegin.Ticks).TotalSeconds);
-            var now = (long)(new TimeSpan(nowUtc.Ticks - centuryBegin.Ticks).TotalSeconds);
+            var exp = (long) (new TimeSpan(expires.Ticks - centuryBegin.Ticks).TotalSeconds);
+            var now = (long) (new TimeSpan(nowUtc.Ticks - centuryBegin.Ticks).TotalSeconds);
             var issuer = string.Empty;
             var payload = new JwtPayload
             {
@@ -254,14 +261,30 @@ namespace ClassSurvey1
                 {
                     switch (node.Name)
                     {
-                        case "Modulus": parameters.Modulus = Convert.FromBase64String(node.InnerText); break;
-                        case "Exponent": parameters.Exponent = Convert.FromBase64String(node.InnerText); break;
-                        case "P": parameters.P = Convert.FromBase64String(node.InnerText); break;
-                        case "Q": parameters.Q = Convert.FromBase64String(node.InnerText); break;
-                        case "DP": parameters.DP = Convert.FromBase64String(node.InnerText); break;
-                        case "DQ": parameters.DQ = Convert.FromBase64String(node.InnerText); break;
-                        case "InverseQ": parameters.InverseQ = Convert.FromBase64String(node.InnerText); break;
-                        case "D": parameters.D = Convert.FromBase64String(node.InnerText); break;
+                        case "Modulus":
+                            parameters.Modulus = Convert.FromBase64String(node.InnerText);
+                            break;
+                        case "Exponent":
+                            parameters.Exponent = Convert.FromBase64String(node.InnerText);
+                            break;
+                        case "P":
+                            parameters.P = Convert.FromBase64String(node.InnerText);
+                            break;
+                        case "Q":
+                            parameters.Q = Convert.FromBase64String(node.InnerText);
+                            break;
+                        case "DP":
+                            parameters.DP = Convert.FromBase64String(node.InnerText);
+                            break;
+                        case "DQ":
+                            parameters.DQ = Convert.FromBase64String(node.InnerText);
+                            break;
+                        case "InverseQ":
+                            parameters.InverseQ = Convert.FromBase64String(node.InnerText);
+                            break;
+                        case "D":
+                            parameters.D = Convert.FromBase64String(node.InnerText);
+                            break;
                     }
                 }
             }
@@ -269,6 +292,7 @@ namespace ClassSurvey1
             {
                 throw new Exception("Invalid XML RSA key.");
             }
+
             rsa.ImportParameters(parameters);
         }
     }
