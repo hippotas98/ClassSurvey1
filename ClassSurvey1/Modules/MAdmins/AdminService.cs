@@ -37,17 +37,6 @@ namespace ClassSurvey1.Modules.MAdmins
             if (AdminSearchEntity == null) AdminSearchEntity = new AdminSearchEntity();
             IQueryable<Admin> Admins = context.Admins;
             Admins = Apply(Admins, AdminSearchEntity);
-            //Admins = AdminSearchEntity.SkipAndTake(Admins);
-           
-//            List<User> Users = new List<User>();
-//            foreach (var admin in Admins)
-//            {
-//                var admin_user = context.Users.FirstOrDefault(u => u.Id == admin.Id);
-//                Users.Add(admin_user);
-//            }
-//            
-//            return Admins.Join(Users, ad => ad.Id, u => u.Id, (ad, u) => new AdminEntity(ad, u))
-//                .ToList();
             return Admins.Select(ad => new AdminEntity(ad)).ToList();
         }
 
@@ -95,7 +84,7 @@ namespace ClassSurvey1.Modules.MAdmins
             var CurrentAdmin = context.Admins.FirstOrDefault(c => c.Id == AdminId);
             if (CurrentAdmin == null) return false;
             var user = context.Users.FirstOrDefault(u => u.Id == AdminId);
-            
+          
             context.Admins.Remove(CurrentAdmin);
             context.SaveChanges();
             context.Users.Remove(user);

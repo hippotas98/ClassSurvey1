@@ -42,38 +42,37 @@ namespace ClassSurvey1.Modules.MClasses
             List<StudentClass> studentClasses = context.StudentClasses.Include(sc => sc.Forms)
                 .Where(sc => sc.ClassId == ClassId).ToList();
             var Class = context.Classes.FirstOrDefault(c => c.Id == ClassId);
-            if(Class == null) throw new BadRequestException("Class not found");
+            if (Class == null) throw new BadRequestException("Class not found");
             foreach (var studentClass in studentClasses)
             {
                 if (studentClass.Forms != null && studentClass.Forms.Count > 0)
                 {
                     count += 1;
                 }
-                
             }
 
             return count / Class.StudentNumber;
         }
+
         public List<ClassEntity> List(UserEntity userEntity, ClassSearchEntity classSearchEntity)
         {
             if (classSearchEntity == null) classSearchEntity = new ClassSearchEntity();
             IQueryable<Class> classes = context.Classes.Include(s => s.StudentClasses).ThenInclude(sc => sc.Student)
                 .Include(s => s.VersionSurvey).Include(c => c.Lecturer);
-            
+
             classes = Apply(classes, classSearchEntity);
-            //List<Class> list = classes.ToList();
-            //classes = classSearchEntity.SkipAndTake(classes);
-            
-            return classes.Select(c => new ClassEntity(c,c.VersionSurvey,c.StudentClasses,c.Lecturer)).ToList();
+
+            return classes.Select(c => new ClassEntity(c, c.VersionSurvey, c.StudentClasses, c.Lecturer)).ToList();
         }
 
-       
+
         public ClassEntity Get(UserEntity userEntity, Guid ClassId)
         {
-            Class Class = context.Classes.Include(c=>c.Lecturer).Include(c => c.StudentClasses).ThenInclude(sc=>sc.Student).Include(s => s.VersionSurvey).FirstOrDefault(c => c.Id == ClassId);
+            Class Class = context.Classes.Include(c => c.Lecturer).Include(c => c.StudentClasses)
+                .ThenInclude(sc => sc.Student).Include(s => s.VersionSurvey).FirstOrDefault(c => c.Id == ClassId);
             if (Class == null) throw new NotFoundException("Class Not Found");
-            List<Class> classes = context.Classes.Where(c=>c.Semester == Class.Semester).ToList();
-            if (//Class.OpenedDate != null && Class.ClosedDate != null && 
+            List<Class> classes = context.Classes.Where(c => c.Semester == Class.Semester).ToList();
+            if ( //Class.OpenedDate != null && Class.ClosedDate != null && 
                 //DateTime.Now > Class.OpenedDate  && DateTime.Now > Class.ClosedDate &&
                 //string.IsNullOrEmpty(Class.M)
                 true)
@@ -82,20 +81,23 @@ namespace ClassSurvey1.Modules.MClasses
                 Average1(Class.Semester);
                 Average2(Class.Semester);
                 StandardDeviation(Class.Semester);
-                StandardDeviation1(Class.Semester);       
+                StandardDeviation1(Class.Semester);
                 StandardDeviation2(Class.Semester);
             }
+
             return new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses, Class.Lecturer);
         }
 
         public ClassEntity Update(UserEntity userEntity, Guid ClassId, ClassEntity classEntity)
         {
-            Class Class = context.Classes.Include(c => c.StudentClasses).Include(s => s.VersionSurvey).FirstOrDefault(c => c.Id == ClassId);
+            Class Class = context.Classes.Include(c => c.StudentClasses).Include(s => s.VersionSurvey)
+                .FirstOrDefault(c => c.Id == ClassId);
             if (Class == null) throw new NotFoundException("Class Not Found");
             Class updateClass = new Class(classEntity);
             updateClass.CopyTo(Class);
             context.SaveChanges();
-            List<StudentClass> studentClasses = context.StudentClasses.Include(f=>f.Forms).Where(sc => sc.ClassId == ClassId).ToList();
+            List<StudentClass> studentClasses =
+                context.StudentClasses.Include(f => f.Forms).Where(sc => sc.ClassId == ClassId).ToList();
             List<StudentClass> Insert, Update, Delete;
             List<StudentClass> newStudentClasses = classEntity.StudentClasses == null
                 ? new List<StudentClass>()
@@ -140,23 +142,20 @@ namespace ClassSurvey1.Modules.MClasses
         {
             var CurrentClass = context.Classes.FirstOrDefault(c => c.Id == ClassId);
             if (CurrentClass == null) return false;
-            var CurrentStudentClasses = context.StudentClasses.Include(sc=>sc.Forms).Where(sc => sc.ClassId == ClassId).ToList();
+            var CurrentStudentClasses = context.StudentClasses.Include(sc => sc.Forms)
+                .Where(sc => sc.ClassId == ClassId).ToList();
             if (CurrentStudentClasses != null)
             {
                 foreach (var sc in CurrentStudentClasses)
                 {
-
                     foreach (var form in sc.Forms)
                     {
                         context.Forms.Remove(form);
                     }
 
                     context.SaveChanges();
-                    context.StudentClasses.Remove(sc);  
-                        
+                    context.StudentClasses.Remove(sc);
                 }
-
-                //context.SaveChanges();
             }
 
             context.Classes.Remove(CurrentClass);
@@ -204,6 +203,7 @@ namespace ClassSurvey1.Modules.MClasses
                     throw new BadRequestException(ex.ToString());
                 }
             }
+
             context.SaveChanges();
             return new ClassEntity(newClass);
         }
@@ -219,10 +219,12 @@ namespace ClassSurvey1.Modules.MClasses
             {
                 classes = classes.Where(c => c.LecturerId == classSearchEntity.LecturerId);
             }
+
             if (classSearchEntity.VersionId != Guid.Empty)
             {
                 classes = classes.Where(c => c.VersionSurveyId == classSearchEntity.VersionId);
             }
+
             if (classSearchEntity.Subject != null)
             {
                 classes = classes.Where(c =>
@@ -233,28 +235,38 @@ namespace ClassSurvey1.Modules.MClasses
             {
                 classes = classes.Where(c => c.Semester.Equals(classSearchEntity.Semester));
             }
-            if (classSearchEntity.OpenedDate.HasValue && classSearchEntity.OpenedDate.Value!= DateTime.MinValue)
+
+            if (classSearchEntity.OpenedDate.HasValue && classSearchEntity.OpenedDate.Value != DateTime.MinValue)
             {
                 classes = classes.Where(c => c.OpenedDate.Value.CompareTo(DateTime.Now) == -1);
             }
+
             if (classSearchEntity.ClosedDate.HasValue && classSearchEntity.ClosedDate.Value != DateTime.MinValue)
             {
                 classes = classes.Where(c => c.ClosedDate.Value.CompareTo(DateTime.Now) == -1);
             }
+
             return classes;
         }
+
         private void Average(string Semester)
         {
-            List<Class> classes = context.Classes.Where(c=>c.Semester == Semester).ToList();
+            List<Class> classes = context.Classes.Where(c => c.Semester == Semester).ToList();
             //List<Dictionary<string, float>> averages = new List<Dictionary<string, float>>();
-            foreach(var Class in classes)
-            {  
-                List<StudentClass> studentClasses = context.StudentClasses.Where(sc => sc.ClassId == Class.Id).ToList(); //Get All Student Classes Which have same ClassId
+            foreach (var Class in classes)
+            {
+                List<StudentClass>
+                    studentClasses =
+                        context.StudentClasses.Where(sc => sc.ClassId == Class.Id)
+                            .ToList(); //Get All Student Classes Which have same ClassId
                 if (studentClasses != null)
                 {
-                    List<Dictionary<string, double>> surveyResults = new List<Dictionary<string, double>>(); //Get Survey Result from all student classes that we found before
+                    List<Dictionary<string, double>>
+                        surveyResults =
+                            new List<Dictionary<string, double>
+                            >(); //Get Survey Result from all student classes that we found before
                     Dictionary<string, double> Ms = new Dictionary<string, double>(); //Get results with Key and M
-                    foreach(var studentClass in studentClasses)
+                    foreach (var studentClass in studentClasses)
                     {
                         Form survey = context.Forms.FirstOrDefault(s => s.StudentClassId == studentClass.Id);
                         if (survey != null)
@@ -268,34 +280,33 @@ namespace ClassSurvey1.Modules.MClasses
                     if (surveyResults.Count > 0)
                     {
                         var keys = surveyResults[0].Keys; //Get all keys from survey results
-                        foreach(var key in keys)
+                        foreach (var key in keys)
                         {
-                            List<int> values = surveyResults.Select(sr => Convert.ToInt32(sr[key])).ToList(); //find values that have the same key
+                            List<int> values = surveyResults.Select(sr => Convert.ToInt32(sr[key]))
+                                .ToList(); //find values that have the same key
                             int sum = 0;
                             values.ForEach(v => sum += v);
                             double average = sum / values.Count();
                             Ms.Add(key, average);
-                    
                         }
+
                         Class.M = JsonConvert.SerializeObject(Ms);
-                        
                     }
                 }
-                
-                
+
+
                 //averages.Add(Ms);
             }
+
             //return averages;
             context.SaveChanges();
         }
+
         private void StandardDeviation(string Semester)
         {
-            List<Class> classes = context.Classes.Where(c=>c.Semester == Semester).ToList();
-            //List<Class> classes = context.Classes.ToList();
-            //List<Dictionary<string, double>> deviations = new List<Dictionary<string, double>>();
+            List<Class> classes = context.Classes.Where(c => c.Semester == Semester).ToList();
             foreach (var Class in classes)
             {
-
                 List<StudentClass> studentClasses = context.StudentClasses.Where(sc => sc.ClassId == Class.Id).ToList();
                 if (studentClasses != null)
                 {
@@ -306,11 +317,10 @@ namespace ClassSurvey1.Modules.MClasses
                         Form survey = context.Forms.FirstOrDefault(s => s.StudentClassId == studentClass.Id);
                         if (survey != null)
                         {
-                            Dictionary<string, double> surveyContent = 
+                            Dictionary<string, double> surveyContent =
                                 JsonConvert.DeserializeObject<Dictionary<string, double>>(survey.Content);
                             surveyResults.Add(surveyContent);
                         }
-                        
                     }
 
                     if (surveyResults.Count > 0)
@@ -322,29 +332,26 @@ namespace ClassSurvey1.Modules.MClasses
                             if (values.Count == 0) return;
                             float sum = 0;
                             values.ForEach(v => sum += v);
-                            
+
                             float average = sum / values.Count();
                             double variance = 0;
-                            values.ForEach(v => variance += Math.Pow((v-average),2));
+                            values.ForEach(v => variance += Math.Pow((v - average), 2));
                             double deviation = Math.Sqrt(variance);
                             Stds.Add(key, deviation);
                         }
+
                         Class.Std = JsonConvert.SerializeObject(Stds);
-                        
                     }
-                    
                 }
-                
-                //deviations.Add(Stds);
             }
+
             context.SaveChanges();
             //return deviations;
         }
+
         private void Average1(string Semester)
         {
-            List<Class> classes = context.Classes.Where(c=>c.Semester == Semester).ToList();
-
-            //List<Class> classes = context.Classes.ToList();
+            List<Class> classes = context.Classes.Where(c => c.Semester == Semester).ToList();
             foreach (var Class in classes)
             {
                 string subject = Class.Subject;
@@ -354,19 +361,19 @@ namespace ClassSurvey1.Modules.MClasses
                     Dictionary<string, string> Ms = JsonConvert.DeserializeObject<Dictionary<string, string>>(Class.M);
                     Dictionary<string, double> M1s = new Dictionary<string, double>();
                     List<string> keys = Ms.Keys.ToList();
-                    foreach(var key in keys)
+                    foreach (var key in keys)
                     {
                         List<double> values = new List<double>();
-                        foreach(var otherClass in classes.Where(c=>c.LecturerId!=LecturerId  && c.Subject == subject))
+                        foreach (var otherClass in classes.Where(
+                            c => c.LecturerId != LecturerId && c.Subject == subject))
                         {
                             if (!String.IsNullOrEmpty(otherClass.M))
                             {
-                                Dictionary<string, string> M = JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.M);
-                                values.Add(Convert.ToDouble(M[key])); 
+                                Dictionary<string, string> M =
+                                    JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.M);
+                                values.Add(Convert.ToDouble(M[key]));
                             }
-                            
                         }
-                        //Console.WriteLine("m1: " + values.Count());
                         double sum = 0;
                         if (values.Count == 0) return;
                         values.ForEach(v => sum += v);
@@ -374,41 +381,40 @@ namespace ClassSurvey1.Modules.MClasses
                         M1s.Add(key, M1);
                     }
                     Class.M1 = JsonConvert.SerializeObject(M1s);
-                    
                 }
-                
             }
             context.SaveChanges();
         }
+
         private void StandardDeviation1(string Semester)
         {
-            List<Class> classes = context.Classes.Where(c=>c.Semester == Semester).ToList();
-
+            List<Class> classes = context.Classes.Where(c => c.Semester == Semester).ToList();
             foreach (var Class in classes)
             {
-                if(!String.IsNullOrEmpty(Class.Std))
+                if (!String.IsNullOrEmpty(Class.Std))
                 {
                     string subject = Class.Subject;
                     Guid LecturerId = Class.LecturerId;
-                    Dictionary<string, string> Stds = JsonConvert.DeserializeObject<Dictionary<string, string>>(Class.Std);
+                    Dictionary<string, string> Stds =
+                        JsonConvert.DeserializeObject<Dictionary<string, string>>(Class.Std);
                     Dictionary<string, double> Std1s = new Dictionary<string, double>();
                     List<string> keys = Stds.Keys.ToList();
                     foreach (var key in keys)
                     {
                         List<double> values = new List<double>();
-                        foreach (var otherClass in classes.Where(c => c.LecturerId != LecturerId && c.Subject == subject))
+                        foreach (var otherClass in classes.Where(
+                            c => c.LecturerId != LecturerId && c.Subject == subject))
                         {
                             if (!String.IsNullOrEmpty(otherClass.Std))
                             {
-                                Dictionary<string, string> Std = JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.Std);
-                                values.Add(Convert.ToDouble(Std[key])); 
+                                Dictionary<string, string> Std =
+                                    JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.Std);
+                                values.Add(Convert.ToDouble(Std[key]));
                             }
-                            
                         }
                         double sum = 0;
                         if (values.Count == 0) return;
                         values.ForEach(v => sum += v);
-                        
                         double M1 = sum / values.Count();
                         double variance = 0;
                         values.ForEach(v => variance += Math.Pow((v - M1), 2));
@@ -416,16 +422,16 @@ namespace ClassSurvey1.Modules.MClasses
                         //Console.WriteLine("std1:" + values.Count() + variance + " " + M1);
                         Std1s.Add(key, Std1);
                     }
+
                     Class.Std1 = JsonConvert.SerializeObject(Std1s);
-                   
                 }
-                
             }
             context.SaveChanges();
         }
+
         private void Average2(string Semester)
         {
-            List<Class> classes = context.Classes.Where(c=>c.Semester == Semester).ToList();
+            List<Class> classes = context.Classes.Where(c => c.Semester == Semester).ToList();
             foreach (var Class in classes)
             {
                 if (!string.IsNullOrEmpty(Class.M))
@@ -438,16 +444,17 @@ namespace ClassSurvey1.Modules.MClasses
                     foreach (var key in keys)
                     {
                         List<double> values = new List<double>();
-                        foreach (var otherClass in classes.Where(c => c.LecturerId == LecturerId && c.Subject != subject))
+                        foreach (var otherClass in classes.Where(
+                            c => c.LecturerId == LecturerId && c.Subject != subject))
                         {
                             if (!String.IsNullOrEmpty(otherClass.M))
                             {
-                                Dictionary<string, string> M = JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.M);
+                                Dictionary<string, string> M =
+                                    JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.M);
                                 values.Add(Convert.ToDouble(M[key]));
                             }
-                            
                         }
-                        
+
                         if (values.Count == 0) return;
                         double sum = 0;
                         values.ForEach(v => sum += v);
@@ -455,36 +462,41 @@ namespace ClassSurvey1.Modules.MClasses
                         //Console.WriteLine("m2: "+values.Count() + M2 + " " + sum);
                         M2s.Add(key, M2);
                     }
+
                     Class.M2 = JsonConvert.SerializeObject(M2s);
                 }
             }
+
             context.SaveChanges();
         }
+
         private void StandardDeviation2(string Semester)
         {
-            List<Class> classes = context.Classes.Where(c=>c.Semester == Semester).ToList();
+            List<Class> classes = context.Classes.Where(c => c.Semester == Semester).ToList();
             foreach (var Class in classes)
             {
                 if (!String.IsNullOrEmpty(Class.Std))
                 {
                     string subject = Class.Subject;
                     Guid LecturerId = Class.LecturerId;
-                    Dictionary<string, string> Stds = JsonConvert.DeserializeObject<Dictionary<string, string>>(Class.Std);
+                    Dictionary<string, string> Stds =
+                        JsonConvert.DeserializeObject<Dictionary<string, string>>(Class.Std);
                     Dictionary<string, double> Std2s = new Dictionary<string, double>();
                     List<string> keys = Stds.Keys.ToList();
                     foreach (var key in keys)
                     {
                         List<double> values = new List<double>();
-                        foreach (var otherClass in classes.Where(c => c.LecturerId == LecturerId && c.Subject != subject))
+                        foreach (var otherClass in classes.Where(
+                            c => c.LecturerId == LecturerId && c.Subject != subject))
                         {
                             if (!String.IsNullOrEmpty(otherClass.Std))
                             {
-                                Dictionary<string, string> Std = JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.Std);
+                                Dictionary<string, string> Std =
+                                    JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.Std);
                                 values.Add(Convert.ToDouble(Std[key]));
                             }
-                            
                         }
-                        
+
                         if (values.Count == 0) return;
                         double sum = 0;
                         values.ForEach(v => sum += v);
@@ -495,10 +507,9 @@ namespace ClassSurvey1.Modules.MClasses
                         //Console.WriteLine("std2:" + values.Count() + variance + " " + M2);
                         Std2s.Add(key, Std2);
                     }
+
                     Class.Std2 = JsonConvert.SerializeObject(Std2s);
                 }
-                
-                
             }
             context.SaveChanges();
         }

@@ -43,14 +43,6 @@ namespace ClassSurvey1.Modules.MStudents
             if (StudentSearchEntity == null) StudentSearchEntity = new StudentSearchEntity();
             IQueryable<Student> Students = context.Students.Include(s=>s.StudentClasses);
             Students = Apply(Students, StudentSearchEntity);
-//            List<User> Users = new List<User>();
-//            foreach (var Student in Students)
-//            {
-//                var User = context.Users.FirstOrDefault(u => u.Id == Student.Id);
-//                Users.Add(User);
-//            }
-//            
-//            return Students.Join(Users, u => u.Id, s => s.Id, (student, user) => new StudentEntity(student, student.StudentClasses, user)).ToList();
             //Students = StudentSearchEntity.SkipAndTake(Students);
             return Students.Select(s => new StudentEntity(s, s.StudentClasses)).ToList();
 
@@ -66,14 +58,12 @@ namespace ClassSurvey1.Modules.MStudents
                     .FirstOrDefault(c => c.Id == sc.ClassId);
                 result.Add(new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses, Class.Lecturer));
             }
-
             return result;
         }
         
         public StudentEntity Get(UserEntity userEntity, Guid StudentId)
         {
             Student Student = context.Students.Include(s=>s.StudentClasses).ThenInclude(sc=>sc.Forms).FirstOrDefault(c => c.Id == StudentId); ///add include later
-            //User User = context.Users.FirstOrDefault(u => u.Id == StudentId);
             if (Student == null) throw new NotFoundException("Student Not Found");
             return new StudentEntity(Student,Student.StudentClasses);
         }

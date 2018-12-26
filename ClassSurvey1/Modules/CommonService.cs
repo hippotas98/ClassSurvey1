@@ -18,32 +18,22 @@ namespace ClassSurvey1.Modules
     public interface IScopedService
     {
     }
-
-    public interface IValidator<T>
-    {
-        bool ValidateCreate(T entity);
-        bool ValidateUpdate(T entity);
-        bool ValidateDelete(T entity);
-    }
     public interface ICommonService
     {
         IEnumerable<T> ConvertToIEnumrable<T>(byte[] data) where T : new();
         string GetPropValueFromExcel(byte[] data, string prop);
-        //IQueryable<T> SkipAndTake<T>(IQueryable<T> source, FilterEntity FilterEntity);
+       
     }
     public class CommonService : ICommonService
     {
-        //protected IUnitOfWork UnitOfWork;
+        
         protected ClassSurveyContext context;
         public CommonService()
         {
             context = new ClassSurveyContext();
         }
 
-        //public CommonService(IUnitOfWork UnitOfWork)
-        //{
-        //    this.UnitOfWork = UnitOfWork;
-        //}
+       
         public IEnumerable<T> ConvertToIEnumrable<T>(byte[] data) where T : new()
         {
             using (MemoryStream ms = new MemoryStream(data))

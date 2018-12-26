@@ -34,11 +34,6 @@ namespace ClassSurvey1.Entities
                 {
                     this.StudentClasses = studentClasses.Select(s => new StudentClassEntity(s,s.Class,s.Forms)).ToList();
                 }
-
-//                if (arg is User User)
-//                {
-//                    this.Username = User.Username;
-//                }
             }
         }
     }

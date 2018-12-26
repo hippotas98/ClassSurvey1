@@ -106,8 +106,7 @@ namespace ClassSurvey1.Modules.MForms
             StudentClass studentClass = context.StudentClasses.Where(sc => sc.Id == FormEntity.StudentClassId).FirstOrDefault();
             if (studentClass == null) return false;
             Class Class = context.Classes.Where(c => c.Id == studentClass.ClassId).FirstOrDefault();
-            if (Class == null) return false;
-            
+            if (Class == null) return false;         
             if (DateTime.Now >= Class.OpenedDate && DateTime.Now <= Class.ClosedDate)
                 return true;
             return false;

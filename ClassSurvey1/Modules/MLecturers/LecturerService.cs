@@ -37,16 +37,7 @@ namespace ClassSurvey1.Modules.MLecturers
         {
             if (LecturerSearchEntity == null) LecturerSearchEntity = new LecturerSearchEntity();
             IQueryable<Lecturer> lecturers = context.Lecturers.Include(l=>l.Classes);
-            //List<User> Users = new List<User>();
             lecturers =  Apply(lecturers, LecturerSearchEntity);
-//            foreach (var lecturer in lecturers)
-//            {
-//                var lecturer_user = context.Users.FirstOrDefault(u => u.Id == lecturer.Id);
-//                Users.Add(lecturer_user);
-//            }
-//            
-//            return lecturers.Join(Users, l => l.Id, u => u.Id, (l, u) => new LecturerEntity(l, l.Classes, u))
-//                .ToList();
             //lecturers = LecturerSearchEntity.SkipAndTake(lecturers);
             return lecturers.Select(l => new LecturerEntity(l, l.Classes)).ToList();
         }
@@ -54,7 +45,6 @@ namespace ClassSurvey1.Modules.MLecturers
         public LecturerEntity Get(UserEntity userEntity, Guid LecturerId)
         {
             Lecturer Lecturer = context.Lecturers.Include(l=>l.Classes).FirstOrDefault(c => c.Id == LecturerId);
-            //User User = context.Users.FirstOrDefault(u => u.Id == LecturerId);
             if (Lecturer == null) throw new NotFoundException("Class Not Found");
             return new LecturerEntity(Lecturer,Lecturer.Classes);
             

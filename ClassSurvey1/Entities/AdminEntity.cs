@@ -20,14 +20,7 @@ namespace ClassSurvey1.Entities
         }
         public AdminEntity(Admin admin, params object[] args) : base(admin)
         {
-            foreach (var arg in args)
-            {
-//                if (arg is User user)
-//                {
-//                    this.Username = User.Username;
-//                    
-//                }
-            }
+            
         }
     }
     public partial class AdminSearchEntity : FilterEntity

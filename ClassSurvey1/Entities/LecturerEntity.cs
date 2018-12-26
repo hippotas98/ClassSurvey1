@@ -26,13 +26,7 @@ namespace ClassSurvey1.Entities
                 if (arg is ICollection<Class> classes)
                 {
                     this.Classes = classes.Select(c => new ClassEntity(c)).ToList();
-                }
-
-//                if (arg is User User)
-//                {
-//                    this.Username = User.Username;
-//                }
-                
+                }              
             }
         }
 
