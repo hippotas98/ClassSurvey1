@@ -5,9 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Threading.Tasks;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Logical;
+
 
 namespace ClassSurvey1.Modules.MClasses
 {
@@ -127,10 +125,8 @@ namespace ClassSurvey1.Modules.MClasses
                     {
                         context.Forms.Remove(form);
                     }
-
-                    studentClasses.Remove(sc);
-                    context.SaveChanges();
-                    context.StudentClasses.Remove(deleteStudentClass);
+                    context.StudentClasses.Remove(sc);
+                    //context.SaveChanges();
                 }
 
             context.SaveChanges();

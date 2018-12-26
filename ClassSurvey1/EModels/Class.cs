@@ -50,5 +50,9 @@ namespace ClassSurvey1.Models
 
             return false;
         }
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode() ^ ClassCode.GetHashCode();
+        }
     }
 }

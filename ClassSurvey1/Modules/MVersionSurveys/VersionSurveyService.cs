@@ -45,7 +45,7 @@ namespace ClassSurvey1.Modules.MVersionSurveys
         {
             if(VersionSurveyEntity.Content.Equals(String.Empty) 
                || VersionSurveyEntity.Content == null
-               || VersionSurveyEntity.Version == null)
+               || VersionSurveyEntity.Version == 0)
                 throw new BadRequestException("Field khong duoc trong");
             VersionSurvey VersionSurvey = context.VersionSurveys.FirstOrDefault(c => c.Id == VersionSurveyId); //add include later
             if (VersionSurvey == null) throw new NotFoundException("VersionSurvey Not Found");
@@ -62,7 +62,7 @@ namespace ClassSurvey1.Modules.MVersionSurveys
         {
             if(versionSurveyEntity.Content.Equals(String.Empty) 
                || versionSurveyEntity.Content == null 
-               || versionSurveyEntity.Version == null)
+               || versionSurveyEntity.Version == 0)
                 throw new BadRequestException("Field khong duoc trong");
             VersionSurvey versionSurvey = new VersionSurvey(versionSurveyEntity);
             versionSurvey.Id = Guid.NewGuid();

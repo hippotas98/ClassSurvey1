@@ -29,7 +29,7 @@ namespace ClassSurvey1.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer("data source=den1.mssql3.gear.host;initial catalog=ClassSurvey;persist security info=True;user id=classsurvey;password=Xh91~Qu4_1XO;multipleactiveresultsets=True;");
             }
         }

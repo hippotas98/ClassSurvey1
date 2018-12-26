@@ -1,11 +1,7 @@
 ﻿using ClassSurvey1.Entities;
 using ClassSurvey1.Models;
-using ClassSurvey1.Modules.MClasses;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Logical;
 
 namespace ClassSurvey1.Modules.MSurveys
 {
@@ -21,8 +17,10 @@ namespace ClassSurvey1.Modules.MSurveys
             foreach(var Id in SurveyEntity.ClassGuids)
             {
                 Class Class = context.Classes.FirstOrDefault(c => c.Id == Id);
-                Class.OpenedDate = DateTime.Parse(SurveyEntity.OpenedDate.ToString());
-                Class.ClosedDate = DateTime.Parse(SurveyEntity.ClosedDate.ToString());
+                if(SurveyEntity.OpenedDate != DateTime.MinValue)
+                    Class.OpenedDate = DateTime.Parse(SurveyEntity.OpenedDate.ToString());
+                if(SurveyEntity.ClosedDate != DateTime.MinValue)
+                    Class.ClosedDate = DateTime.Parse(SurveyEntity.ClosedDate.ToString());
                 Class.Semester = GetSemester(Class.OpenedDate.Value);
                 //var StudentClasses = context.StudentClasses.Where(sc => sc.ClassId == Id).ToList();
                 

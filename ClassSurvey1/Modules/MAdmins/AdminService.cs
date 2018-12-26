@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ClassSurvey1.Entities;
 using ClassSurvey1.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace ClassSurvey1.Modules.MAdmins
 {
