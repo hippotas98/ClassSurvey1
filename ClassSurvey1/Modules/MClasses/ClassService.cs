@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Logical;
 
 
 namespace ClassSurvey1.Modules.MClasses
@@ -91,6 +92,8 @@ namespace ClassSurvey1.Modules.MClasses
             Class Class = context.Classes.Include(c => c.StudentClasses).Include(s => s.VersionSurvey)
                 .FirstOrDefault(c => c.Id == ClassId);
             if (Class == null) throw new NotFoundException("Class Not Found");
+            if (classEntity.LecturerId != Guid.Empty && context.Lecturers.FirstOrDefault(l => l.Id == classEntity.LecturerId) == null)
+                throw new BadRequestException("Lecturer Not Existed");
             Class updateClass = new Class(classEntity);
             updateClass.CopyTo(Class);
             context.SaveChanges();
@@ -173,6 +176,7 @@ namespace ClassSurvey1.Modules.MClasses
                     if (lecturerCode == "") throw new BadRequestException("Cannot Get Ma can bo");
                     //newClass.LectureId = new Guid(Id);
                     var lecturer = context.Lecturers.FirstOrDefault(l => l.LecturerCode.Trim() == lecturerCode);
+                    if(lecturer == null) throw new BadRequestException("Lecturer Not Existed");
                     newClass.LecturerId = lecturer.Id;
                     //newClass.Lecture = lecturer;
                     newClass.Subject = GetPropValueFromExcel(data, "Môn học:");

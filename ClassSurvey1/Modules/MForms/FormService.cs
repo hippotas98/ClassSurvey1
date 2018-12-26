@@ -62,8 +62,8 @@ namespace ClassSurvey1.Modules.MForms
         {
             if (FormValidator(FormEntity))
             {
-                Form form = context.Forms.Where(f => f.StudentClassId == FormEntity.StudentClassId).FirstOrDefault();
-                if(form == null) throw new BadRequestException("Cannot create form"); 
+                if(context.Forms.FirstOrDefault(f => f.StudentClassId == FormEntity.StudentClassId) != null) 
+                    throw new BadRequestException("Cannot create form"); 
                 Form Form = new Form(FormEntity);
                 Form.Id = Guid.NewGuid();
                 context.Forms.Add(Form);

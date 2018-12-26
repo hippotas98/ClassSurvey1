@@ -53,7 +53,7 @@ namespace ClassSurvey1.Modules.MLecturers
         public LecturerEntity Update(UserEntity userEntity, Guid LecturerId, LecturerEntity lecturerEntity)
         {
             Lecturer Lecturer = context.Lecturers.Include(c => c.Classes).FirstOrDefault(c => c.Id == LecturerId);
-            if (Lecturer == null) throw new NotFoundException("Class Not Found");
+            if (Lecturer == null) throw new NotFoundException("Lecturer Not Found");
             Lecturer updateLecturer = new Lecturer(lecturerEntity);
             updateLecturer.CopyTo(Lecturer);
             context.SaveChanges();

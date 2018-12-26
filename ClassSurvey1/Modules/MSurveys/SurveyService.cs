@@ -17,13 +17,17 @@ namespace ClassSurvey1.Modules.MSurveys
             foreach(var Id in SurveyEntity.ClassGuids)
             {
                 Class Class = context.Classes.FirstOrDefault(c => c.Id == Id);
+                if(Class == null) 
+                    throw new BadRequestException("Class Not Found");
+                
                 if(SurveyEntity.OpenedDate != DateTime.MinValue)
                     Class.OpenedDate = DateTime.Parse(SurveyEntity.OpenedDate.ToString());
                 if(SurveyEntity.ClosedDate != DateTime.MinValue)
                     Class.ClosedDate = DateTime.Parse(SurveyEntity.ClosedDate.ToString());
                 Class.Semester = GetSemester(Class.OpenedDate.Value);
                 //var StudentClasses = context.StudentClasses.Where(sc => sc.ClassId == Id).ToList();
-                
+                if (context.VersionSurveys.FirstOrDefault(vs => vs.Id == SurveyEntity.VersionSurveyId) == null)
+                    throw new BadRequestException("Version Survey Not Found");
                 Class.VersionSurveyId = SurveyEntity.VersionSurveyId;
                 
             }
