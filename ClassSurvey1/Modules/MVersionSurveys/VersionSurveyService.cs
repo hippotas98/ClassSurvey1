@@ -89,11 +89,20 @@ namespace ClassSurvey1.Modules.MVersionSurveys
 
         public bool Delete(UserEntity userEntity, Guid VersionSurveyId)
         {
-            var CurrentVersionSurvey = context.VersionSurveys.FirstOrDefault(c => c.Id == VersionSurveyId);
-            if (CurrentVersionSurvey == null) return false;
-            context.VersionSurveys.Remove(CurrentVersionSurvey);
-            context.SaveChanges();
-            return true;
+            try
+            {
+                var CurrentVersionSurvey = context.VersionSurveys.FirstOrDefault(c => c.Id == VersionSurveyId);
+                if (CurrentVersionSurvey == null) return false;
+                if (!VersionSurveyValidator(VersionSurveyId)) return false;
+                context.VersionSurveys.Remove(CurrentVersionSurvey);
+                context.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }   
         }
 
         private IQueryable<VersionSurvey> Apply(IQueryable<VersionSurvey> VersionSurveys,

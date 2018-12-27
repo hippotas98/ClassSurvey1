@@ -259,7 +259,7 @@ namespace ClassSurvey1.Modules.MClasses
                     studentClasses =
                         context.StudentClasses.Where(sc => sc.ClassId == Class.Id)
                             .ToList(); //Get All Student Classes Which have same ClassId
-                if (studentClasses != null)
+                if (studentClasses.Count > 0)
                 {
                     List<Dictionary<string, double>>
                         surveyResults =
@@ -308,7 +308,7 @@ namespace ClassSurvey1.Modules.MClasses
             foreach (var Class in classes)
             {
                 List<StudentClass> studentClasses = context.StudentClasses.Where(sc => sc.ClassId == Class.Id).ToList();
-                if (studentClasses != null)
+                if (studentClasses.Count > 0)
                 {
                     List<Dictionary<string, double>> surveyResults = new List<Dictionary<string, double>>();
                     Dictionary<string, double> Stds = new Dictionary<string, double>();

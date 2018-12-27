@@ -117,8 +117,8 @@ namespace ClassSurvey1.Modules.MStudents
         public bool Delete(UserEntity userEntity, Guid StudentId)
         {
             var CurrentStudent = context.Students.FirstOrDefault(c => c.Id == StudentId);
-            var StudentClasses = context.StudentClasses.Include(f=>f.Forms).Where(sc => sc.StudentId == StudentId);
-            if (StudentClasses != null)
+            List<StudentClass> StudentClasses = context.StudentClasses.Include(f=>f.Forms).Where(sc => sc.StudentId == StudentId).ToList();
+            if (StudentClasses.Count > 0)
             {
                 foreach (var studentClass in StudentClasses)
                 {
