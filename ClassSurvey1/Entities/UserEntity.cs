@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ClassSurvey1.Entities;
 using ClassSurvey1.Models;
 
 namespace ClassSurvey1.Modules
@@ -14,9 +15,12 @@ namespace ClassSurvey1.Modules
         public string Password { get; set; }
         [Column(3)]
         public List<string> Roles { get; set; }
+        public AdminEntity Admin { get; set; }
+        public LecturerEntity Lecturer { get; set; }
+        public StudentEntity Student { get; set; }
         public UserEntity() { }
 
-        public UserEntity(User User) : base(User)
+        public UserEntity(User User, params object[] args) : base(User)
         {
             ROLES Roles = ROLES.USER;
             if (User.Admin!= null) Roles = Roles | ROLES.ADMIN;
@@ -24,6 +28,23 @@ namespace ClassSurvey1.Modules
             if (User.Lecturer != null) Roles |= ROLES.LECTURER;
             
             this.Roles = Roles.ToString().Replace(" ", "").Split(",").ToList();
+            foreach (var arg in args)
+            {
+                if (arg is Student)
+                {
+                    this.Student = new StudentEntity((Student)arg);
+                }
+
+                if (arg is Admin)
+                {
+                    this.Admin = new AdminEntity((Admin)arg);
+                }
+
+                if (arg is Lecturer)
+                {
+                    this.Lecturer = new LecturerEntity((Lecturer)arg);
+                }
+            }
         }
         
     }

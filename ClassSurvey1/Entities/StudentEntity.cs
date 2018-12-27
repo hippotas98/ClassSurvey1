@@ -64,7 +64,7 @@ namespace ClassSurvey1.Entities
             }
 
             StudentEntity.Username = this.UserName;
-            StudentEntity.Name = this.Name;
+            StudentEntity.Name = this.Name.Trim();
             StudentEntity.Vnumail = this.Vnumail;
             StudentEntity.Code = this.UserName;
             StudentEntity.Class = this.Class;

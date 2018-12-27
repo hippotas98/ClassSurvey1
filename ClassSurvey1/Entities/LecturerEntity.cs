@@ -52,7 +52,7 @@ namespace ClassSurvey1.Entities
             }
 
             lecturerEntity.Username = this.Username;
-            lecturerEntity.Name = this.Name;
+            lecturerEntity.Name = this.Name.Trim();
             lecturerEntity.Vnumail = this.Vnumail;
             lecturerEntity.LecturerCode = this.LecturerCode;
             return lecturerEntity;

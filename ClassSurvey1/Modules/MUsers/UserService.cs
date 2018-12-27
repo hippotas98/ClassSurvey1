@@ -58,7 +58,7 @@ namespace ClassSurvey1.Modules
                 .Where(u => u.Id == UserId).FirstOrDefault();
             if (User == null)
                 throw new BadRequestException("User không tồn tại");
-            return new UserEntity(User);
+            return new UserEntity(User, User.Admin, User.Lecturer, User.Student);
         }
 
         public UserEntity Create(UserEntity UserEntity)
@@ -136,7 +136,7 @@ namespace ClassSurvey1.Modules
             string hashPassword = (User.Password);
             if (!SecurePasswordHasher.Verify(UserEntity.Password, hashPassword))
                 throw new BadRequestException("Bạn nhập sai password.");
-            UserEntity = new UserEntity(User);
+            UserEntity = new UserEntity(User, User.Admin, User.Lecturer, User.Student);
             //UserEntity.Roles = new List<string>() { "1", "4" };
             return JWTHandler.CreateToken(UserEntity);
         }

@@ -179,8 +179,8 @@ namespace ClassSurvey1.Modules.MClasses
                     if(lecturer == null) throw new BadRequestException("Lecturer Not Existed");
                     newClass.LecturerId = lecturer.Id;
                     //newClass.Lecture = lecturer;
-                    newClass.Subject = GetPropValueFromExcel(data, "Môn học:");
-                    newClass.ClassCode = GetPropValueFromExcel(data, "Lớp môn học:");
+                    newClass.Subject = GetPropValueFromExcel(data, "Môn học:").Trim();
+                    newClass.ClassCode = GetPropValueFromExcel(data, "Lớp môn học:").Trim();
                     newClass.StudentNumber = studentModelEntities.Count(sme => sme.Code != null);
                     Console.WriteLine(newClass.Subject + "  " + newClass.ClassCode + "    " + lecturerCode);
                     var Students = context.Students;
