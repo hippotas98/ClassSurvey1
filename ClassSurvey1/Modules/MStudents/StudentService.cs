@@ -55,7 +55,10 @@ namespace ClassSurvey1.Modules.MStudents
             {
                 var Class = context.Classes.Include(c => c.VersionSurvey).Include(c=>c.Lecturer).Include(c => c.StudentClasses).ThenInclude(s=>s.Forms)
                     .FirstOrDefault(c => c.Id == sc.ClassId);
-                result.Add(new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses, Class.Lecturer));
+                var addClass = new ClassEntity(Class, Class.VersionSurvey, Class.Lecturer);
+                addClass.StudentClasses = new List<StudentClassEntity>();
+                addClass.StudentClasses.Add(new StudentClassEntity(sc));
+                result.Add(addClass);
             }
 
             return result;
