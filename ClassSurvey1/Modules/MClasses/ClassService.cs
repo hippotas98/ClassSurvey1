@@ -371,7 +371,8 @@ namespace ClassSurvey1.Modules.MClasses
                             {
                                 Dictionary<string, string> M =
                                     JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.M);
-                                values.Add(Convert.ToDouble(M[key]));
+                                if(M.ContainsKey(key))
+                                    values.Add(Convert.ToDouble(M[key]));
                             }
                         }
                         double sum = 0;
@@ -409,7 +410,8 @@ namespace ClassSurvey1.Modules.MClasses
                             {
                                 Dictionary<string, string> Std =
                                     JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.Std);
-                                values.Add(Convert.ToDouble(Std[key]));
+                                if(Std.ContainsKey(key))
+                                    values.Add(Convert.ToDouble(Std[key]));
                             }
                         }
                         double sum = 0;
@@ -451,7 +453,8 @@ namespace ClassSurvey1.Modules.MClasses
                             {
                                 Dictionary<string, string> M =
                                     JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.M);
-                                values.Add(Convert.ToDouble(M[key]));
+                                if(M.ContainsKey(key))
+                                    values.Add(Convert.ToDouble(M[key]));
                             }
                         }
 
@@ -493,7 +496,8 @@ namespace ClassSurvey1.Modules.MClasses
                             {
                                 Dictionary<string, string> Std =
                                     JsonConvert.DeserializeObject<Dictionary<string, string>>(otherClass.Std);
-                                values.Add(Convert.ToDouble(Std[key]));
+                                if(Std.ContainsKey(key))
+                                    values.Add(Convert.ToDouble(Std[key]));
                             }
                         }
 
