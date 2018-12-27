@@ -46,6 +46,11 @@ namespace ClassSurvey1.Modules.MStudents
         {
             return StudentService.GetClasses(StudentId);
         }
+        [HttpGet("StudentClasses/{StudentId}")]
+        public List<StudentClassEntity> GetStudentClasses([FromRoute]Guid StudentId)
+        {
+            return StudentService.GetStudentClasses(StudentId);
+        }
         [HttpDelete("{StudentId}")]
         public bool Delete([FromRoute]Guid StudentId)
         {

@@ -17,7 +17,7 @@ namespace ClassSurvey1.Modules.MStudents
         List<StudentEntity> CreateFromExcel(byte[] data);
         StudentEntity Create(StudentExcelModel StudentExcelModel);
         List<ClassEntity> GetClasses(Guid StudentId);
-        
+        List<StudentClassEntity> GetStudentClasses(Guid StudentId);
     }
 
     public class StudentService : CommonService, IStudentService
@@ -48,7 +48,7 @@ namespace ClassSurvey1.Modules.MStudents
         }
         public List<ClassEntity> GetClasses(Guid StudentId)
         {
-            List<StudentClass> studentClasses = context.StudentClasses.Where(sc=>sc.StudentId == StudentId).ToList();
+            List<StudentClass> studentClasses = context.StudentClasses.Where(sc=>sc.StudentId == StudentId).Include(c=>c.Class).ToList();
             if(studentClasses == null) throw new NotFoundException("Class Not Found");
             List<ClassEntity> result = new List<ClassEntity>();
             foreach (var sc in studentClasses)
@@ -57,9 +57,25 @@ namespace ClassSurvey1.Modules.MStudents
                     .FirstOrDefault(c => c.Id == sc.ClassId);
                 result.Add(new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses, Class.Lecturer));
             }
+
             return result;
+            //return studentClasses.Select(sc => new StudentClassEntity(sc, sc.Class)).ToList();
         }
-        
+        public List<StudentClassEntity> GetStudentClasses(Guid StudentId)
+        {
+            List<StudentClass> studentClasses = context.StudentClasses.Where(sc=>sc.StudentId == StudentId).Include(c=>c.Class).ToList();
+            if(studentClasses == null) throw new NotFoundException("Class Not Found");
+            List<ClassEntity> result = new List<ClassEntity>();
+            foreach (var sc in studentClasses)
+            {
+                var Class = context.Classes.Include(c => c.VersionSurvey).Include(c=>c.Lecturer).Include(c => c.StudentClasses).ThenInclude(s=>s.Forms)
+                    .FirstOrDefault(c => c.Id == sc.ClassId);
+                result.Add(new ClassEntity(Class, Class.VersionSurvey, Class.StudentClasses, Class.Lecturer));
+            }
+
+            //return result;
+            return studentClasses.Select(sc => new StudentClassEntity(sc, sc.Class)).ToList();
+        }
         public StudentEntity Get(UserEntity userEntity, Guid StudentId)
         {
             Student Student = context.Students.Include(s=>s.StudentClasses).ThenInclude(sc=>sc.Forms).FirstOrDefault(c => c.Id == StudentId); ///add include later
